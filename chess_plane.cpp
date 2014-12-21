@@ -1,14 +1,14 @@
 #include "chess_plane.h"
 
 
-Plane::Plane(scalar_t a /*= 1*/, scalar_t b /*= 0*/, scalar_t c /*= 0*/,
-             scalar_t d /*= 0*/)
+Plane::Plane(float a /*= 1*/, float b /*= 0*/, float c /*= 0*/,
+             float d /*= 0*/)
 {
     N = Vector(a, b, c);
     D = d;
 }
 
-Plane::Plane(const Vector& normal, scalar_t d /*= 0*/)
+Plane::Plane(const Vector& normal, float d /*= 0*/)
 {
     N = normal;
     D = d;

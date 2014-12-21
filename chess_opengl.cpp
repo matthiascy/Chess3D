@@ -17,108 +17,12 @@
 #include "chess_texture_manage.h"
 #include "chess_opengl.h"
 #include "chess_game.h"
-#include "chess_board.h"
 
 #pragma warning(disable:4244)
 #pragma warning(disable:4305)
 
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
-
-
-// private
-void ChessOGL::generateChessBoardDL()
-{
-  chessBoardDL = glGenLists(1);
-
-  glNewList(chessBoardDL, GL_COMPILE);
-
-  for (int x = 0; x < 4; x++)
-    for (int z = 0; z < 4; z++)
-    {
-      for (int row = 2*x; row < 2*x+2; row++)
-      {
-        glBegin(GL_TRIANGLE_STRIP);
-        for (int col = 2*z; col < 2*z+2; col++)
-        {
-          glTexCoord2f(row/2.0, col/2.0);
-          glVertex3f(row, 0.0, col);
-
-          glTexCoord2f((row+1)/2.0, col/2.0);
-          glVertex3f(row+1, 0.0, col);
-
-          glTexCoord2f(row/2.0, (col+1)/2.0);
-          glVertex3f(row, 0.0, col+1);
-
-          glTexCoord2f((row+1)/2.0, (col+1)/2.0);
-          glVertex3f(row+1, 0.0, col+1);
-        }
-        glEnd();
-      }		
-    }
-
-    glEndList();
-}
-
-void ChessOGL::renderChessBoard()
-{
-  texMgr.bind(boardTexture);
-  glPushMatrix();
-  glCallList(chessBoardDL);
-  glPopMatrix();
-}
-
-void ChessOGL::renderSelections()
-{
-  for (int x = 0; x < 8; x++) {
-    for (int z = 0; z < 8; z++) {
-      if (chessGame->getBoardHighlight(x, z)) {
-        glColor4f(1.0, 1.0, 0.2, 1.0f);	// yellow color
-        drawSelectionBox((float)x, 0.001f, (float)z);
-      }
-    }
-  }
-}
-
-void ChessOGL::renderPieces()
-{
-  chessGame->render();
-}
-
-void ChessOGL::renderTable()
-{
-  texMgr.bind(tableTexture);
-  glBegin(GL_TRIANGLE_STRIP);
-  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-  glTexCoord2f(10.0, 0.0);
-  glVertex3f(20.0f, -0.1f, 20.0f);
-  glTexCoord2f(0.0, 0.0);
-  glVertex3f(-20.0f, -0.1f, 20.0f);
-  glTexCoord2f(10.0, 10.0);
-  glVertex3f(20.0f, -0.1f, -20.0f);
-  glTexCoord2f(0.0, 10.0);
-  glVertex3f(-20.0f, -0.1f, -20.0f);
-  glEnd();
-}
-
-void ChessOGL::drawSelectionBox(float x, float y, float z)
-{
-  glDisable(GL_TEXTURE_2D);
-  glPushMatrix();
-  glTranslatef(x, y, z);
-  glLineWidth(5.0f);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glBegin(GL_POLYGON);
-  glTexCoord2f(1.0, 0.0);	glVertex3f(0.01, 0.0, 0.01);
-  glTexCoord2f(0.0, 0.0); glVertex3f(0.99, 0.0, 0.01);
-  glTexCoord2f(0.0, 1.0); glVertex3f(0.99, 0.0, 0.99);
-  glTexCoord2f(1.0, 1.0); glVertex3f(0.01, 0.0, 0.99);
-  glEnd();
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glLineWidth(1.0f);
-  glPopMatrix();
-  glEnable(GL_TEXTURE_2D);
-}
 
 // public
 ChessOGL::ChessOGL()
@@ -130,17 +34,16 @@ ChessOGL::~ChessOGL()
 {
 
 }
-
-bool ChessOGL::init()
-{
-  if (!texMgr.loadTextures("res\\texture.dat"))
+bool ChessOGL::initialize()
+{	
+  if (!texMgr.loadTextures("Textures.dat"))
     return false;
 
   glEnable(GL_TEXTURE_2D);
 
   tableTexture = texMgr.getTextureID("wood");
   boardTexture = texMgr.getTextureID("chessboard");
-  texMgr.bind(boardTexture);
+  texMgr.bindTex(boardTexture);
 
   generateChessBoardDL();
 
@@ -151,15 +54,16 @@ bool ChessOGL::init()
   return true;
 }
 
-bool ChessOGL::shutDown()
+bool ChessOGL::shutdown()
 {
   texMgr.releaseTextures();
+
   glDeleteLists(chessBoardDL, 1);
 
   return true;
 }
 
-void ChessOGL::attachToGame(ChessGame* game)
+void ChessOGL::attachToGame(ChessGame *game)
 {
   chessGame = game;
 }
@@ -167,9 +71,7 @@ void ChessOGL::attachToGame(ChessGame* game)
 void ChessOGL::setupProjection(int width, int height)
 {
   if (height == 0)					// don't want a divide by zero
-  {
-    height = 1;					
-  }
+    height = 1;
 
   glViewport(0, 0, width, height);		// reset the viewport to new dimensions
   glMatrixMode(GL_PROJECTION);			// set projection matrix current matrix
@@ -201,9 +103,11 @@ void ChessOGL::render()
   glLoadIdentity();
 
   if (currentView == WHITE)
-    gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0, 0.0, 1.0, 0.0);
+    gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
+      0.0, 1.0, 0.0);
   else
-    gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0, 0.0, 1.0, 0.0);
+    gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
+      0.0, 1.0, 0.0);
 
   // render the wood table
   glDisable(GL_DEPTH_TEST);
@@ -259,7 +163,99 @@ void ChessOGL::render()
   glPopMatrix();
 }
 
-void ChessOGL::get3DIntersection(int winx, int winy, double& x, double& y, double& z)
+void ChessOGL::renderSelections()
+{
+  for (int x = 0; x < 8; x++) {
+    for (int z = 0; z < 8; z++) {
+      if (chessGame->getBoardHighlight(x, z)) {
+        glColor4f(1.0, 1.0, 0.2, 1.0f);	// yellow color
+        drawSelectionBox((float)x, 0.001f, (float)z);
+      }
+    }
+  }
+}
+
+void ChessOGL::drawSelectionBox(float x, float y, float z)
+{
+  glDisable(GL_TEXTURE_2D);
+  glPushMatrix();
+  glTranslatef(x, y, z);
+  glLineWidth(5.0f);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glBegin(GL_POLYGON);
+  glTexCoord2f(1.0, 0.0); glVertex3f(0.01, 0.0, 0.01);
+  glTexCoord2f(0.0, 0.0); glVertex3f(0.99, 0.0, 0.01);
+  glTexCoord2f(0.0, 1.0); glVertex3f(0.99, 0.0, 0.99);
+  glTexCoord2f(1.0, 1.0); glVertex3f(0.01, 0.0, 0.99);
+  glEnd();
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glLineWidth(1.0f);
+  glPopMatrix();
+  glEnable(GL_TEXTURE_2D);
+}
+
+void ChessOGL::renderTable()
+{
+  texMgr.bindTex(tableTexture);
+  glBegin(GL_TRIANGLE_STRIP);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+  glTexCoord2f(10.0, 0.0);
+  glVertex3f(20.0f, -0.1f, 20.0f);
+  glTexCoord2f(0.0, 0.0);
+  glVertex3f(-20.0f, -0.1f, 20.0f);
+  glTexCoord2f(10.0, 10.0);
+  glVertex3f(20.0f, -0.1f, -20.0f);
+  glTexCoord2f(0.0, 10.0);
+  glVertex3f(-20.0f, -0.1f, -20.0f);
+  glEnd();
+}
+
+void ChessOGL::generateChessBoardDL()
+{
+  chessBoardDL = glGenLists(1);
+
+  glNewList(chessBoardDL, GL_COMPILE);
+
+  for (int x = 0; x < 4; x++) {
+    for (int z = 0; z < 4; z++) {
+      for (int row = 2*x; row < 2*x+2; row++) {
+
+        glBegin(GL_TRIANGLE_STRIP);
+        for (int col = 2*z; col < 2*z+2; col++) {
+          glTexCoord2f(row/2.0, col/2.0);
+          glVertex3f(row, 0.0, col);
+
+          glTexCoord2f((row+1)/2.0, col/2.0);
+          glVertex3f(row+1, 0.0, col);
+
+          glTexCoord2f(row/2.0, (col+1)/2.0);
+          glVertex3f(row, 0.0, col+1);
+
+          glTexCoord2f((row+1)/2.0, (col+1)/2.0);
+          glVertex3f(row+1, 0.0, col+1);
+        }
+        glEnd();
+      }		
+    }
+  }
+
+  glEndList();
+}
+
+void ChessOGL::renderChessBoard()
+{
+  texMgr.bindTex(boardTexture);
+  glPushMatrix();
+  glCallList(chessBoardDL);
+  glPopMatrix();
+}
+
+void ChessOGL::renderPieces()
+{
+  chessGame->render();
+}
+
+void ChessOGL::get3DIntersection(int winx, int winy, double &x, double &y, double &z)
 {
   int viewport[4];
   double modelMatrix[16];

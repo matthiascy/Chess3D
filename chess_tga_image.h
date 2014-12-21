@@ -8,7 +8,7 @@ enum TGATypes {
   TGA_GRAYSCALE = 3,
   TGA_INDEXED_RLE = 9,
   TGA_RGB_RLE = 10,
-  TGA_GRAYSCALE_RLE = 11,
+  TGA_GRAYSCALE_RLE = 11
 };
 
 // image data formats
@@ -29,17 +29,17 @@ enum TGATypes {
 #define TOP_RIGHT    0x30       // first pixel is top right corner
 
 // TGA header
-struct TGAHeader_t {
-  unsigned char idLength;
-  unsigned char colorMapType;
-  unsigned char imageTypeCode;
-  unsigned char colorMapSpec[5];
-  unsigned short xOrigin;
-  unsigned short yOrigin;
-  unsigned short width;
-  unsigned short height;
-  unsigned char bpp;
-  unsigned char imageDesc;
+struct TGAHeader {
+  unsigned char  idLength;		
+  unsigned char  colorMapType;	
+  unsigned char  imageTypeCode;	
+  unsigned char  colorMapSpec[5];	
+  unsigned short xOrigin;			
+  unsigned short yOrigin;			
+  unsigned short width;			
+  unsigned short height;			
+  unsigned char  bpp;				
+  unsigned char  imageDesc;	
 };
 
 struct RGBA_t {
@@ -57,13 +57,13 @@ struct RGB_t {
 
 class TargaImage {
 private:
-  unsigned char colorDepth;
-  unsigned char imageDataType;
-  unsigned char imageDataFormat;
+  unsigned char  colorDepth;
+  unsigned char  imageDataType;
+  unsigned char  imageDataFormat;
   unsigned char* imageData;
   unsigned short width;
-  unsigned short height;
-  unsigned long imageSize;
+  unsigned short height;	
+  unsigned long  imageSize;
 
   // swap the red and blue components in the image data
   void swapRedBlue();
@@ -85,7 +85,7 @@ public:
 
   // converts RGB format to RGBA format and vice versa
   bool convertRGBAToRGB();
-  bool convertRGBTORGBA(unsigned char alphaValue);
+  bool convertRGBToRGBA(unsigned char alphaValue);
 
   // returns the current image data
   unsigned char* getImage() { return imageData; };

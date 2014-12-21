@@ -14,7 +14,7 @@ private:
 
   TextureMgr texMgr;
 
-  ChessGame* chessGame;
+  ChessGame *chessGame;
 
   unsigned int chessBoardDL;
   unsigned int boardTexture;
@@ -22,7 +22,7 @@ private:
 
   Vector whiteViewPos;
   Vector blackViewPos;
-  char currentView;
+  char   currentView;
 
   void generateChessBoardDL();
   void renderChessBoard();
@@ -35,16 +35,17 @@ public:
   ChessOGL();
   virtual ~ChessOGL();
 
-  bool init();
-  bool shutDown();
+  bool initialize();
+  bool shutdown();
 
-  void attachToGame(ChessGame* game);
+  void attachToGame(ChessGame *game);
+
   void setupProjection(int width, int height);
 
   void prepare(float dt);
   void render();
 
-  void get3DIntersection(int winx, int winy, double& x, double& y, double& z);
+  void get3DIntersection(int winx, int winy, double &x, double &y, double &z);
 };
 
 #endif // __CHESS_OPENGL_H__

@@ -7,26 +7,24 @@
 #define DEG2RAD(a)    PI/180*a
 #define RAD2DEG(a)    180/PI*a
 
-typedef float scalar_t;
-
 class Vector {
 public:
   union {
     struct {
-      scalar_t x;
-      scalar_t y;
-      scalar_t z;
+      float x;
+      float y;
+      float z;
     };
-    scalar_t v[3];
+    float v[3];
   };
 
 public :
-  Vector(scalar_t a = 0, scalar_t b = 0, scalar_t c = 0): x(a),
+  Vector(float a = 0, float b = 0, float c = 0): x(a),
     y(b), z(c) {};
   Vector(const Vector& vec): x(vec.x), y(vec.y), z(vec.z) {};
 
   // vector index
-  scalar_t &operator [](const long idx);
+  float &operator [](const long idx);
 
   // vector assignment
   const Vector& operator =(const Vector& vec);
@@ -56,16 +54,16 @@ public :
   const Vector& operator -=(const Vector& vec);
 
   // scalar self-multiply
-  const Vector& operator *=(const scalar_t& s);
+  const Vector& operator *=(const float& s);
 
   // scalar self-divide
-  const Vector& operator /=(const scalar_t& s);
+  const Vector& operator /=(const float& s);
 
   // right multiply by scalar
-  const Vector operator *(const scalar_t& s) const;
+  const Vector operator *(const float& s) const;
 
   // left multiply by scalar
-  friend inline const Vector operator *(const scalar_t& s, const Vector& vec) {
+  friend inline const Vector operator *(const float& s, const Vector& vec) {
     return vec*s;
   }
 
@@ -73,7 +71,7 @@ public :
   const Vector operator *(const Vector& vec) const;
 
   // divide by scalar
-  const Vector operator /(scalar_t s) const;
+  const Vector operator /(float s) const;
 
   // cross product
   const Vector cross(const Vector& vec) const;
@@ -82,13 +80,13 @@ public :
   const Vector operator ^(const Vector& vec) const;
 
   // dot product
-  const scalar_t dot(const Vector& vec) const;
+  const float dot(const Vector& vec) const;
 
   // dot product
-  const scalar_t operator %(const Vector& vec) const;
+  const float operator %(const Vector& vec) const;
 
   // length of vector
-  const scalar_t length() const;
+  const float length() const;
 
   // return unit vector
   const Vector unit() const;
@@ -97,26 +95,26 @@ public :
   void normalize();
 
   // square root
-  const scalar_t operator !() const;
+  const float operator !() const;
 
   // return vector with specified length
-  const Vector operator |(const scalar_t length) const;
+  const Vector operator |(const float length) const;
 
   // set length of vector equal to length
-  const Vector& operator |=(const scalar_t length);
+  const Vector& operator |=(const float length);
 
   // return angle between two vectors
-  const scalar_t inline angle(const Vector& normal) const;
+  const float inline angle(const Vector& normal) const;
 
   // reflect this vector off surface with normal vector
   const Vector inline reflect(const Vector& normal) const;
 
   // rotate angle degrees about a normal
-  const Vector inline rotate(const scalar_t angle, const Vector& normal) const;
+  const Vector inline rotate(const float angle, const Vector& normal) const;
 
 };
 
-const scalar_t Vector::angle(const Vector& normal) const
+const float Vector::angle(const Vector& normal) const
 {
   return acosf(*this % normal);
 }
@@ -127,7 +125,7 @@ const Vector Vector::reflect(const Vector& normal) const
   return (vec - normal * 2.0 * (vec % normal)) * !*this;
 }
 
-const Vector Vector::rotate(const scalar_t angle, const Vector& normal) const
+const Vector Vector::rotate(const float angle, const Vector& normal) const
 {
   const float cosine = cosf(angle);
   const float sine = sinf(angle);

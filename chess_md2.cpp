@@ -5,259 +5,152 @@
 
 const float SPHERE_PADDING = 10.0;
 
-struct ModelInfo {
+
+typedef struct {
   int numVerts;
   int numTris;
   int numFrames;
   GLfloat minY;
   Sphere boundingSphere;
-};
+} ModelInfo;
 
-// this is a bit of hack, since the sphere isn't guaranteed to completely
-// surround the model.
-void calculateBoundingSphere(Sphere& sphere, GLfloat miny, GLfloat maxy)
-{
-  sphere.center.x = 0;
-  sphere.center.y = (maxy + miny) / 2.0f;
-  sphere.center.z = 0;
-  sphere.radius = maxy - sphere.center.y + SPHERE_PADDING;
-}
 
-bool loadModel(char* filename, Vertex* &verts, Mesh* &tris,
-               TexCoord* &texCoords, ModelInfo& info, GLfloat scale)
-{
-  // open file model file
-  FILE* file = fopen(filename, "rb");
-  if (file == NULL)
-    return false;
-
-  ModelHeader header;
-
-  fread(&header, sizeof(ModelHeader), 1, file);
-  verts = new Vertex[header.numVerts * header.numFrames];
-
-  info.numVerts = header.numVerts;
-  info.numTris = header.numTris;
-  info.numFrames = header.numFrames;
-
-  char* buffer = new char[header.numFrames * header.frameSize];
-  fseek(file, header.offsetFrames, SEEK_SET);
-  fread(buffer, header.numFrames, header.frameSize, file);
-
-  Frame* frame;
-  Vertex* vts;
-  info.minY = FLT_MAX;
-  GLfloat maxy = FLT_MIN;
-
-  for (int j = 0; j < header.numFrames; j++) {
-    frame = (Frame*)&buffer[header.frameSize * j];
-    vts = (Vertex*)&verts[header.numVerts * j];
-
-    for (int i = 0; i < header.numVerts; i++) {
-      vts[i].x = scale * (frame->scale[0] * frame->fp[i].v[0] +
-        frame->translate[0]);
-      vts[i].z = scale * (frame->scale[1] * frame->fp[i].v[1] +
-        frame->translate[1]);
-      vts[i].y = scale * (frame->scale[2] * frame->fp[i].v[2] +
-        frame->translate[2]);
-
-      if (j == 0) {
-        if (vts[i].y < info.minY)
-          info.minY = vts[i].y;
-        if (vts[i].y > maxy)
-          maxy = vts[i].y;
-      }
-    }
-  }
-
-  calculateBoundingSphere(info.boundingSphere, info.minY, maxy);
-
-  tris = new Mesh[header.numTris];
-  fseek(file, header.offsetTris, SEEK_SET);
-  fread(tris, header.numTris, sizeof(Mesh), file);
-
-  TexCoordIndex* texTemp = new TexCoordIndex[header.numTex];
-  texCoords = new TexCoord[header.numTris * 3];
-  fseek(file, header.offsetTex, SEEK_SET);
-  fread(texTemp, header.numTex, sizeof(TexCoordIndex), file);
-
-  int index = 0;
-
-  for (int i = 0; i < header.numTris; i++) {
-    texCoords[index].s = (float)texTemp[tris[i].texIndex[0]].s /
-      header.skinWidth;
-    texCoords[index++].t = 1.0f - (float)texTemp[tris[i].texIndex[0]].t /
-      header.skinHeight;
-
-    texCoords[index].s = (float)texTemp[tris[i].texIndex[1]].s /
-      header.skinWidth;
-    texCoords[index].t = 1.0f - (float)texTemp[tris[i].texIndex[1]].t /
-      header.skinHeight;
-
-    texCoords[index].s = (float)texTemp[tris[i].texIndex[2]].s /
-      header.skinWidth;
-    texCoords[index].t = 1.0f - (float)texTemp[tris[i].texIndex[2]].t /
-      header.skinHeight;
-  }
-
-  fclose(file);
-  delete [] buffer;
-
-  return true;
-}
-
-// MD2Instance
+bool loadModel(char *filename, Vertex* &verts, Mesh* &tris, TexCoord* &texCoords,
+               ModelInfo &info, GLfloat scale);
+void CalculateBoundingSphere(Sphere &sphere, GLfloat miny, GLfloat maxy);
+  
 MD2Instance::MD2Instance()
 {
-  currentFrame = 0;
-  nextFrame = 1;
-  interpolation = 0.0;
+  currentFrame = 0;   // current keyframe 
+  nextFrame = 1;      // next keyframe
+  interpolation = 0.0;     // interpolation percent
   currentVerts = NULL;
-  state = IDLE;
-  rotate = 0.0;
+  aniState = IDLE;
+  rotateAngle = 0.0;
   data = NULL;
   numWeaponVertices = 0;
   numVertices = 0;
-}
+}    
 
 MD2Instance::~MD2Instance()
 {
   unload();
 }
 
-void MD2Instance::setAnimation(int stat, int nextStat /*= _REPEAT*/)
+void MD2Instance::setAnimation(int state, int nextState)
 {
-  switch (stat) {
-    case IDLE: {
-      startFrame = 0;
-      endFrame = 39;
-      break;           
-    }
-
+  switch (state) {
     case RUN: {
       startFrame = 40;
       endFrame = 45;
-      break;
-    }
+    } break;
 
     case ATTACK: {
       startFrame = 46;
       endFrame = 53;
-      break;
-    }
+    } break;
 
     case PAIN1: {
       startFrame = 54;
       endFrame = 57;
-      break;
-    }
+    } break;
 
     case PAIN2: {
       startFrame = 58;
       endFrame = 61;
-      break;
-    }
+    } break;
 
     case PAIN3: {
       startFrame = 62;
       endFrame = 65;
-      break;
-    }
+    } break;
 
     case JUMP: {
       startFrame = 66;
       endFrame = 71;
-      break;
-    }
+    } break;
 
     case FLIPOFF: {
       startFrame = 72;
       endFrame = 83;
-      break;
-    }
+    } break;
 
     case SAULTE: {
       startFrame = 84;
       endFrame = 94;
-      break;
-    }
+    } break;
 
     case TAUNT: {
       startFrame = 95;
       endFrame = 111;
-      break;
-    }
+    } break;
 
     case WAVE: {
       startFrame = 112;
       endFrame = 122;
-      break;
-    }
+    } break;
 
     case POINT: {
       startFrame = 123;
       endFrame = 134;
-      break;
-    }
+    } break;
 
     case CROUCH_IDLE: {
       startFrame = 135;
       endFrame = 153;
-      break;
-    }
+    } break;
 
     case CROUCH_WALK: {
       startFrame = 154;
       endFrame = 159;
-      break;
-    }
+     } break;
 
     case CROUCH_ATTACK: {
       startFrame = 160;
       endFrame = 168;
-      break;
-    }
+    } break;
 
     case CROUCH_PAIN: {
       startFrame = 169;
       endFrame = 172;
-      break;
-    }
+    } break;
 
     case CROUCH_DEATH: {
       startFrame = 173;
       endFrame = 177;
-      break;
-    }
+    } break;
 
     case DEATH1: {
       startFrame = 178;
       endFrame = 183;
-      break;             
-    }
+    } break;
 
     case DEATH2: {
       startFrame = 184;
       endFrame = 189;
-      break; 
-    }
+    } break;
 
     case DEATH3: {
       startFrame = 190;
       endFrame = 197;
-      break;             
-    }
+    } break;
+
+    case IDLE: {
+      startFrame = 0;
+      endFrame = 39;
+    } break;
 
     default:
       return;
   }
 
-  if (state != stat) {
+  if (aniState != state) {
     currentFrame = startFrame;
     nextFrame = startFrame + 1;
   }
-  state = stat;
-  nextState = nextStat;
+
+  aniState = state;
+  nextAniState = nextState;
 }
 
 void MD2Instance::setAnimationCustom(int start, int end)
@@ -275,8 +168,8 @@ void MD2Instance::setAnimationCustom(int start, int end)
   startFrame = start;
   endFrame = end;
 
-  state = _CUSTOM;
-  nextState = _CUSTOM;
+  aniState = _CUSTOM;
+  nextAniState = _CUSTOM;
 }
 
 void MD2Instance::animate(float seconds)
@@ -290,8 +183,8 @@ void MD2Instance::animate(float seconds)
   if (startFrame >= numFrames || endFrame >= numFrames)
     return;
 
-  // increase percentage of interpolation between frame
-  interpolation += KEYFRAME_PER_S * seconds;
+  // increase percentage of interpolation between frames
+  interpolation += KEYFRAMES_PER_S * seconds;
 
   if (interpolation >= 1.0) {
     interpolation = 0.0f;
@@ -299,14 +192,14 @@ void MD2Instance::animate(float seconds)
     nextFrame = currentFrame + 1;
 
     if (currentFrame > endFrame) {
-      if (nextState == _REPEAT || state == _CUSTOM) {
+      if (nextAniState == _REPEAT || aniState == _CUSTOM) {
         currentFrame = startFrame;
         nextFrame = currentFrame + 1;
-      } else if (nextState == _STATIC) {
+      } else if (nextAniState == _STATIC) {
         currentFrame = nextFrame = startFrame = endFrame;
-        state = _STATIC;
+        aniState = _STATIC;
       } else {
-        setAnimation(nextState, _REPEAT);
+        setAnimation(nextAniState, _REPEAT);
       }
     }
 
@@ -314,8 +207,8 @@ void MD2Instance::animate(float seconds)
       nextFrame = startFrame;
   }
 
-  if ((nextState == _STATIC) && (nextFrame == startFrame))
-    nextFrame == endFrame;
+  if ((nextAniState == _STATIC) && (nextFrame == startFrame))
+    nextFrame = endFrame;
 
   data->animate(currentVerts, weaponVerts, currentFrame, nextFrame, interpolation);
 }
@@ -324,7 +217,7 @@ void MD2Instance::render()
 {
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
-  glRotatef(rotate, 0.0, 1.0, 0.0);
+  glRotatef(rotateAngle, 0, 1, 0);
 
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -333,7 +226,7 @@ void MD2Instance::render()
   glVertexPointer(3, GL_FLOAT, 0, currentVerts);
   glTexCoordPointer(2, GL_FLOAT, 0, data->texCoords);
 
-  glBindTexture(GL_TEXTURE_2D, data->texId);
+  glBindTexture(GL_TEXTURE_2D, data->texID);
   glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
   if (weaponVerts) {
@@ -349,6 +242,7 @@ void MD2Instance::render()
   glPopMatrix();
 }
 
+// unload()
 // desc: unloads model data from memory
 void MD2Instance::unload()
 {
@@ -357,6 +251,7 @@ void MD2Instance::unload()
   delete [] weaponVerts;
   weaponVerts = NULL;
 }
+
 
 void MD2Instance::move(GLfloat x, GLfloat y, GLfloat z)
 {
@@ -369,11 +264,13 @@ void MD2Instance::move(GLfloat x, GLfloat y, GLfloat z)
   boundingSphere.center.z = z;
 }
 
+// MD2Data constructor
 MD2Data::MD2Data()
 {
-  tris = NULL;
-  texCoords = NULL;
-  verts = NULL;
+  tris = NULL;       // triangle indices
+  texCoords = NULL;  // texture coordinate indices
+  verts = NULL;      // vertices
+  texID = 0;         // skin/texture
   numVerts = 0;
   numTris = 0;
   numFrames = 0;
@@ -384,16 +281,58 @@ MD2Data::MD2Data()
   numWeaponVerts = 0;
   numWeaponTris = 0;
   weaponTexID = 0;
-}
+}    
 
+// MD2Data destructor
 MD2Data::~MD2Data()
 {
   unload();
 }
 
+// MD2Data::load()
+// access: public
+// desc: loads model and skin
+bool MD2Data::load(char *modelFile, char *skinFile, char *weaponFile,
+                   char *weaponSkin, float scale)
+{
+  ModelInfo info;
+
+  loadModel(modelFile, verts, tris, texCoords, info, scale);
+  numVerts = info.numVerts;
+  numTris = info.numTris;
+  numFrames = info.numFrames;
+  miny = info.minY;
+  boundingSphere = info.boundingSphere;
+
+  if (weaponFile) {
+    loadModel(weaponFile, weaponVerts, weaponTris, weaponTexCoords, info, scale);
+    numWeaponVerts = info.numVerts;
+    numWeaponTris = info.numTris;
+  }
+
+  TargaImage image;
+
+  image.load(skinFile);
+  glGenTextures(1, &texID);
+  glBindTexture(GL_TEXTURE_2D, texID);
+  gluBuild2DMipmaps(GL_TEXTURE_2D, 3, image.getWidth(), image.getHeight(),
+    GL_RGB, GL_UNSIGNED_BYTE, image.getImage());
+  image.release();
+
+  if (weaponSkin) {
+    image.load(weaponSkin);
+    glGenTextures(1, &weaponTexID);
+    glBindTexture(GL_TEXTURE_2D, weaponTexID);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, image.getWidth(), image.getHeight(),
+      GL_RGB, GL_UNSIGNED_BYTE, image.getImage());
+    image.release();
+  }
+  return true;
+}
+
 MD2Instance* MD2Data::getInstance()
 {
-  MD2Instance* instance = new MD2Instance();
+  MD2Instance *instance = new MD2Instance();
 
   instance->currentVerts = new Vertex[numTris * 3];
   instance->weaponVerts = new Vertex[numWeaponTris * 3];
@@ -414,19 +353,21 @@ MD2Instance* MD2Data::getInstance()
   return instance;
 }
 
-void MD2Data::animate(Vertex* vts, Vertex* weaponVts, int curFrame,
+
+void MD2Data::animate(Vertex *pVerts, Vertex *pWeaponVerts, int curFrame,
                       int nextFrame, float interpol)
 {
-  Vertex* vList;      // current frame vertices
-  Vertex* nextVList;  // next frame vertices
-  float x1, y1, z1;   // current frame point values
-  float x2, y2, z2;   // next frame point values
+  Vertex *vList;              // current frame vertices
+  Vertex *nextVList;          // next frame vertices
+  int i;                                  // index counter
+  float x1, y1, z1;                  // current frame point values
+  float x2, y2, z2;                  // next frame point values
 
   vList = &verts[numVerts * curFrame];
   nextVList = &verts[numVerts * nextFrame];
 
-  for (int i = 0; i < numTris * 3; i++) {
-    Vertex& vtx = vts[i];
+  for (i = 0; i < numTris * 3; i++) {
+    Vertex &vertex = pVerts[i];
     // get first points of each frame
     x1 = vList[tris[i/3].meshIndex[i%3]].x;
     y1 = vList[tris[i/3].meshIndex[i%3]].y;
@@ -436,17 +377,17 @@ void MD2Data::animate(Vertex* vts, Vertex* weaponVts, int curFrame,
     z2 = nextVList[tris[i/3].meshIndex[i%3]].z;
 
     // store first interpolated vertex of triangle
-    vtx.x = x1 + interpol * (x2 - x1);
-    vtx.y = y1 + interpol * (y2 - y1);
-    vtx.z = z1 + interpol * (z2 - z1);
+    vertex.x = x1 + interpol * (x2 - x1);
+    vertex.y = y1 + interpol * (y2 - y1);
+    vertex.z = z1 + interpol * (z2 - z1);
   }
 
   if (weaponVerts) {
     vList = &weaponVerts[numWeaponVerts * curFrame];
     nextVList = &weaponVerts[numWeaponVerts * nextFrame];
 
-    for (int i = 0; i < numWeaponTris * 3; i++) {
-      Vertex& vtx = weaponVts[i];
+    for (i = 0; i < numWeaponTris * 3; i++) {
+      Vertex &vertex = pWeaponVerts[i];
       // get first points of each frame
       x1 = vList[weaponTris[i/3].meshIndex[i%3]].x;
       y1 = vList[weaponTris[i/3].meshIndex[i%3]].y;
@@ -456,13 +397,15 @@ void MD2Data::animate(Vertex* vts, Vertex* weaponVts, int curFrame,
       z2 = nextVList[weaponTris[i/3].meshIndex[i%3]].z;
 
       // store first interpolated vertex of triangle
-      vtx.x = x1 + interpol * (x2 - x1);
-      vtx.y = y1 + interpol * (y2 - y1);
-      vtx.z = z1 + interpol * (z2 - z1);
+      vertex.x = x1 + interpol * (x2 - x1);
+      vertex.y = y1 + interpol * (y2 - y1);
+      vertex.z = z1 + interpol * (z2 - z1);
     }
   }
 }
 
+// unload()
+// desc: unloads model data from memory
 void MD2Data::unload()
 {
   delete [] tris;
@@ -479,43 +422,88 @@ void MD2Data::unload()
   delete [] weaponTexCoords;
   weaponTexCoords = NULL;
 
-  glDeleteTextures(1, &texId);
+  glDeleteTextures(1, &texID);
 }
 
-//
-bool MD2Data::load(char* modelFile, char* skinFile, char* weaponFile /*= NULL*/,
-                   char* weaponSkin /*= NULL*/, float scale /*= 1.0f*/)
+
+bool loadModel(char *filename, Vertex* &verts, Mesh* &tris, TexCoord* &texCoords,
+               ModelInfo &info, GLfloat scale)
 {
-  ModelInfo info;
+  // open the model file
+  FILE *file = fopen(filename, "rb");
+  if (file == NULL)
+    return false;
 
-  loadModel(modelFile, verts, tris, texCoords, info, scale);
-  numVerts = info.numVerts;
-  numTris = info.numTris;
-  numFrames = info.numFrames;
-  miny = info.minY;
-  boundingSphere = info.boundingSphere;
+  ModelHeader header;
 
-  if (weaponFile) {
-    loadModel(weaponFile, weaponVerts, weaponTris, weaponTexCoords, info, scale);
-    numWeaponVerts = info.numVerts;
-    numWeaponTris = info.numTris;
+  fread(&header, sizeof(ModelHeader), 1, file);
+  verts = new Vertex[header.numVerts * header.numFrames];
 
-    TargaImage image;
-    image.load(skinFile);
-    glGenTextures(1, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, image.getWidth(), image.getHeight(),
-      GL_RGB, GL_UNSIGNED_BYTE, image.getImage());
-    image.release();
+  info.numVerts = header.numVerts;
+  info.numTris = header.numTris;
+  info.numFrames = header.numFrames;
 
-    if (weaponSkin) {
-      image.load(weaponSkin);
-      glGenTextures(1, &weaponTexID);
-      glBindTexture(GL_TEXTURE_2D, weaponTexID);
-      gluBuild2DMipmaps(GL_TEXTURE_2D, 3, image.getWidth(), image.getHeight(),
-        GL_RGB, GL_UNSIGNED_BYTE, image.getImage());
-      image.release();
+  char *buffer = new char[header.numFrames * header.framesize];
+  fseek(file, header.offsetFrames, SEEK_SET);
+  fread(buffer, header.numFrames, header.framesize, file);
+
+  int i, j;
+  Frame *frame;
+  Vertex *pVerts;
+  info.minY = FLT_MAX;
+  GLfloat maxy = FLT_MIN;
+
+  for (j = 0; j < header.numFrames; ++j) {
+    frame = (Frame*)&buffer[header.framesize * j];
+    pVerts = (Vertex*)&verts[header.numVerts * j];
+    for (i = 0; i < header.numVerts; i++) {
+      pVerts[i].x = scale * (frame->scale[0] * frame->fp[i].v[0] + frame->translate[0]); 
+      pVerts[i].z = scale * (frame->scale[1] * frame->fp[i].v[1] + frame->translate[1]); 
+      pVerts[i].y = scale * (frame->scale[2] * frame->fp[i].v[2] + frame->translate[2]); 
+
+      if (j == 0) {
+        if (pVerts[i].y < info.minY)
+          info.minY = pVerts[i].y;
+        if (pVerts[i].y > maxy)
+          maxy = pVerts[i].y;
+      }
     }
-    return true;
   }
+
+  CalculateBoundingSphere(info.boundingSphere, info.minY, maxy);
+
+  tris = new Mesh[header.numTris];
+  fseek(file, header.offsetTris, SEEK_SET);
+  fread(tris, header.numTris, sizeof(Mesh), file);
+
+  TexCoordIdx *stTemp = new TexCoordIdx[header.numTex];
+  texCoords = new TexCoord[header.numTris * 3];
+  fseek(file, header.offsetTex, SEEK_SET);
+  fread(stTemp, header.numTex, sizeof(TexCoordIdx), file);
+
+  int index = 0;
+  for (i = 0; i < header.numTris; i++) {
+    texCoords[index].s = (float)stTemp[tris[i].texIndex[0]].s / header.skinwidth;
+    texCoords[index++].t = 1.0f - (float)stTemp[tris[i].texIndex[0]].t / header.skinheight;
+    texCoords[index].s = (float)stTemp[tris[i].texIndex[1]].s / header.skinwidth;
+    texCoords[index++].t = 1.0f - (float)stTemp[tris[i].texIndex[1]].t / header.skinheight;
+    texCoords[index].s = (float)stTemp[tris[i].texIndex[2]].s / header.skinwidth;
+    texCoords[index++].t = 1.0f - (float)stTemp[tris[i].texIndex[2]].t / header.skinheight;
+  }
+
+  // close file and free memory
+  fclose(file);
+  delete[] buffer;
+
+  return true;
+}
+
+// this is a bit of a hack, since the sphere isn't guaranteed to completely
+// surround the model. However, the results for this demo are satisfactory
+void CalculateBoundingSphere(Sphere &sphere, GLfloat miny, GLfloat maxy)
+{
+  sphere.center.x = 0;
+  sphere.center.y = (maxy + miny) / 2.0f;
+  sphere.center.z = 0;
+  sphere.radius = maxy - sphere.center.y + SPHERE_PADDING;
 }

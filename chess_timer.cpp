@@ -1,6 +1,6 @@
 #include "chess_timer.h"
 
-bool ChessHiResTimer::init()
+bool ChessHiResTimer::initialize()
 {
   if (!QueryPerformanceFrequency(&ticksPerSecond)) {
     // system doesn't support hi-res timer

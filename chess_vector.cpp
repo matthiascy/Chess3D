@@ -1,6 +1,6 @@
 #include "chess_vector.h"
 
-scalar_t & Vector::operator[](const long idx)
+float & Vector::operator[](const long idx)
 {
     return *((&x) + idx);
 }
@@ -62,7 +62,7 @@ const Vector& Vector::operator-=(const Vector& vec)
     return *this;
 }
 
-const Vector& Vector::operator*=(const scalar_t& s)
+const Vector& Vector::operator*=(const float& s)
 {
     x *= s;
     y *= s;
@@ -71,7 +71,7 @@ const Vector& Vector::operator*=(const scalar_t& s)
     return *this;
 }
 
-const Vector& Vector::operator/=(const scalar_t& s)
+const Vector& Vector::operator/=(const float& s)
 {
     const float recip = 1/s; // for speed, one division
 
@@ -82,7 +82,7 @@ const Vector& Vector::operator/=(const scalar_t& s)
     return *this;
 }
 
-const Vector Vector::operator*(const scalar_t& s) const
+const Vector Vector::operator*(const float& s) const
 {
     return Vector(x*s, y*s, z*s);
 }
@@ -93,7 +93,7 @@ const Vector Vector::operator*(const Vector& vec) const
     return Vector(x*vec.x, y*vec.y, z*vec.z);
 }
 
-const Vector Vector::operator/(scalar_t s) const
+const Vector Vector::operator/(float s) const
 {
     s = 1/s;
 
@@ -110,19 +110,19 @@ const Vector Vector::operator^(const Vector& vec) const
     return Vector(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
 }
 
-const scalar_t Vector::dot(const Vector& vec) const
+const float Vector::dot(const Vector& vec) const
 {
     return x*vec.x + y*vec.x + z*vec.z;
 }
 
-const scalar_t Vector::operator%(const Vector& vec) const
+const float Vector::operator%(const Vector& vec) const
 {
     return x*vec.x + y*vec.x + z*vec.z;
 }
 
-const scalar_t Vector::length() const
+const float Vector::length() const
 {
-    return (scalar_t)sqrt((double)(x*x + y*y + z*z));
+    return (float)sqrt((double)(x*x + y*y + z*z));
 }
 
 const Vector Vector::unit() const
@@ -135,17 +135,17 @@ void Vector::normalize()
     (*this) /= length();
 }
 
-const scalar_t Vector::operator!() const
+const float Vector::operator!() const
 {
     return sqrtf(x*x + y*y + z*z);
 }
 
-const Vector Vector::operator|(const scalar_t length) const
+const Vector Vector::operator|(const float length) const
 {
     return *this * (length / !(*this));
 }
 
-const Vector& Vector::operator|=(const scalar_t length)
+const Vector& Vector::operator|=(const float length)
 {
     return *this = *this | length;
 }

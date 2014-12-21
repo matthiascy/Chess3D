@@ -8,13 +8,13 @@
 #define PIECE_DYING   2
 
 struct ChessPiece {
-  char color;
-  unsigned char type;
-  bool inPlay;
-  int row;
-  int col;
-  char state;    // IDLE, MOVING, DYING
-  MD2Instance *model;
+  char pieceColor;
+  unsigned char	pieceType;
+  bool pieceInPlay;
+  int pieceRow;		// row
+  int pieceCol;		// col
+  char pieceState;	// IDLE, MOVING, DYING
+  MD2Instance* pieceModel;
 };
 
 #endif // __CHESS_PIECE_H__

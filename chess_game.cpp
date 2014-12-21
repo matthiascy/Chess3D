@@ -5,166 +5,351 @@
 
 ChessGame::ChessGame()
 {
-
 }
 
 ChessGame::~ChessGame()
 {
-
 }
 
-// private methods
 void ChessGame::setupWhitePieces()
 {
-  whitePawn.load("hueteotl\\tris.md2", "hueteotl\\hueteotl_white.tga",
-    "hueteotl\\weapon.md2", "hueteotl\\weapon.tga", 0.02f);
-
-  whiteRook.load("rhino\\tris.md2", "rhino\\rhino_white.tga", NULL, NULL,
-    0.015f);
-
-  whiteKnight.load("pknight\\tris.md2", "pknight\\knight_white.tga",
-    "pknight\\weapon.md2", "pknight\\weapon.tga", 0.025f);
-
-  whiteBishop.load("phantom\\tris.md2", "phantom\\phantom_white.tga",
-    "phantom\\weapon.md2", "phantom\\weapon.tga", 0.03f);
-
-  whiteQueen.load("goblin\\tris.md2", "goblin\\goblin_white.tga",
-    "goblin\\weapon.md2", "goblin\\weapon.tga", 0.03f);
-
-  whiteKing.load("orc\\tris.md2", "orc\\burningblade.tga", "orc\\weapon.md2",
-    "orc\\weapon.tga", 0.03f);
+  whitePawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl_white.tga",
+    "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
+  whiteRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino_white.tga", NULL,
+    NULL, 0.015f);
+  whiteKnight.load("res\\pknight\\tris.md2", "res\\pknight\\knight_white.tga",
+    "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
+  whiteBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom_white.tga",
+    "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
+  whiteQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin_white.tga",
+    "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
+  whiteKing.load("res\\orc\\tris.md2", "res\\orc\\burningblade.tga",
+    "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
 
   // setup white pawns
   for (int idx = 0; idx < 8; idx++) {
-    pieces[idx].type = PIECE_PAWN;
-    pieces[idx].col = idx;
-    pieces[idx].row = 1;
-    pieces[idx].color = WHITE;
-    pieces[idx].inPlay = true;
-    pieces[idx].model = whitePawn.getInstance();
+    pieces[idx].pieceType = PIECE_PAWN;
+    pieces[idx].pieceCol = idx;
+    pieces[idx].pieceRow = 1;
+    pieces[idx].pieceColor = WHITE;
+    pieces[idx].pieceInPlay = true;
+    pieces[idx].pieceModel = whitePawn.getInstance();
   }
 
   // white rooks
-  pieces[8].type = pieces[9].type = PIECE_ROOK;
-  pieces[8].color = pieces[9].color = WHITE;
-  pieces[8].col = 0; pieces[9].col = 7;
-  pieces[8].row = 0; pieces[9].row = 0;
-  pieces[8].inPlay = pieces[9].inPlay = true;
-  pieces[8].model = whiteRook.getInstance();
-  pieces[9].model = whiteRook.getInstance();
+  pieces[8].pieceType = pieces[9].pieceType = PIECE_ROOK;
+  pieces[8].pieceColor = pieces[9].pieceColor = WHITE;
+  pieces[8].pieceCol = 0; pieces[9].pieceCol = 7;
+  pieces[8].pieceRow = 0;	pieces[9].pieceRow = 0;
+  pieces[8].pieceInPlay = pieces[9].pieceInPlay = true;
+  pieces[8].pieceModel = whiteRook.getInstance();
+  pieces[9].pieceModel = whiteRook.getInstance();
 
   // white knights
-  pieces[10].type = pieces[11].type = PIECE_KNIGHT;
-  pieces[10].color = pieces[11].color = WHITE;
-  pieces[10].col = 1; pieces[11].col = 6;
-  pieces[10].row = 0; pieces[11].row = 0;
-  pieces[10].inPlay = pieces[11].inPlay = true;
-  pieces[10].model = whiteKnight.getInstance();
-  pieces[11].model = whiteKnight.getInstance();
+  pieces[10].pieceType = pieces[11].pieceType = PIECE_KNIGHT;
+  pieces[10].pieceColor = pieces[11].pieceColor = WHITE;
+  pieces[10].pieceCol = 1; pieces[11].pieceCol = 6;
+  pieces[10].pieceRow = 0; pieces[11].pieceRow = 0;
+  pieces[10].pieceInPlay = pieces[11].pieceInPlay = true;
+  pieces[10].pieceModel = whiteKnight.getInstance();
+  pieces[11].pieceModel = whiteKnight.getInstance();
 
   // white bishops
-  pieces[12].type = pieces[13].type = PIECE_BISHOP;
-  pieces[12].color = pieces[13].color = WHITE;
-  pieces[12].col = 2; pieces[13].col = 5;
-  pieces[12].row = 0; pieces[13].row = 0;
-  pieces[12].inPlay = pieces[13].inPlay = true;
-  pieces[12].model = whiteBishop.getInstance();
-  pieces[13].model = whiteBishop.getInstance();
+  pieces[12].pieceType = pieces[13].pieceType = PIECE_BISHOP;
+  pieces[12].pieceColor = pieces[13].pieceColor = WHITE;
+  pieces[12].pieceCol = 2; pieces[13].pieceCol = 5;
+  pieces[12].pieceRow = 0; pieces[13].pieceRow = 0;
+  pieces[12].pieceInPlay = pieces[13].pieceInPlay = true;
+  pieces[12].pieceModel = whiteBishop.getInstance();
+  pieces[13].pieceModel = whiteBishop.getInstance();
 
   // white queen
-  pieces[14].type = PIECE_QUEEN;
-  pieces[14].color = WHITE;
-  pieces[14].col = 3;
-  pieces[14].row = 0;
-  pieces[14].inPlay = true;
-  pieces[14].model = whiteQueen.getInstance();
+  pieces[14].pieceType = PIECE_QUEEN;
+  pieces[14].pieceColor = WHITE;
+  pieces[14].pieceCol = 3;
+  pieces[14].pieceRow = 0;
+  pieces[14].pieceInPlay = true;
+  pieces[14].pieceModel = whiteQueen.getInstance();
 
   // white king
-  pieces[15].type = PIECE_KING;
-  pieces[15].color = WHITE;
-  pieces[15].col = 4;
-  pieces[15].row = 0;
-  pieces[15].inPlay = true;
-  pieces[15].model = whiteKing.getInstance();
+  pieces[15].pieceType = PIECE_KING;
+  pieces[15].pieceColor = WHITE;
+  pieces[15].pieceCol = 4;
+  pieces[15].pieceRow = 0;
+  pieces[15].pieceInPlay = true;
+  pieces[15].pieceModel = whiteKing.getInstance();
 }
 
 void ChessGame::setupBlackPieces()
 {
-  blackPawn.load("hueteotl\\tris.md2", "hueteotl\\hueteotl.tga", "hueteotl\\weapon.md2", "hueteotl\\weapon.tga", 0.02f);
-
-  blackRook.load("rhino\\tris.md2", "rhino\\rhino.tga", NULL, NULL, 0.015f);
-
-  blackKnight.load("pknight\\tris.md2", "pknight\\evil.tga", "pknight\\weapon.md2", "pknight\\weapon.tga", 0.025f);
-
-  blackBishop.load("phantom\\tris.md2", "phantom\\phantom.tga", "phantom\\weapon.md2", "phantom\\weapon.tga", 0.03f);
-
-  blackQueen.load("goblin\\tris.md2", "goblin\\goblin.tga", "goblin\\weapon.md2", "goblin\\weapon.tga", 0.03f);
-
-  blackKing.load("orc\\tris.md2", "orc\\blackrock.tga", "orc\\weapon.md2", "orc\\weapon.tga", 0.03f);
+  blackPawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl.tga",
+    "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
+  blackRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino.tga", NULL, NULL,
+    0.015f);
+  blackKnight.load("res\\pknight\\tris.md2", "res\\pknight\\evil.tga",
+    "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
+  blackBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom.tga",
+    "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
+  blackQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin.tga",
+    "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
+  blackKing.load("res\\orc\\tris.md2", "res\\orc\\blackrock.tga",
+    "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
 
   // setup black pawns
   for (int idx = 16; idx < 24; idx++)
   {
-    pieces[idx].type = PIECE_PAWN;
-    pieces[idx].col = idx - 16;
-    pieces[idx].row = 6;
-    pieces[idx].color = BLACK;
-    pieces[idx].inPlay = true;
-    pieces[idx].model = blackPawn.getInstance();
+    pieces[idx].pieceType = PIECE_PAWN;
+    pieces[idx].pieceCol = idx - 16;
+    pieces[idx].pieceRow = 6;
+    pieces[idx].pieceColor = BLACK;
+    pieces[idx].pieceInPlay = true;
+    pieces[idx].pieceModel = blackPawn.getInstance();
   }
 
   // black rooks
-  pieces[24].type = pieces[25].type = PIECE_ROOK;
-  pieces[24].color = pieces[25].color = BLACK;
-  pieces[24].col = 0; pieces[25].col = 7;
-  pieces[24].row = 7; pieces[25].row = 7;
-  pieces[24].inPlay = pieces[25].inPlay = true;
-  pieces[24].model = blackRook.getInstance();
-  pieces[25].model = blackRook.getInstance();
+  pieces[24].pieceType = pieces[25].pieceType = PIECE_ROOK;
+  pieces[24].pieceColor = pieces[25].pieceColor = BLACK;
+  pieces[24].pieceCol = 0; pieces[25].pieceCol = 7;
+  pieces[24].pieceRow = 7; pieces[25].pieceRow = 7;
+  pieces[24].pieceInPlay = pieces[25].pieceInPlay = true;
+  pieces[24].pieceModel = blackRook.getInstance();
+  pieces[25].pieceModel = blackRook.getInstance();
 
   // black knights
-  pieces[26].type = pieces[27].type = PIECE_KNIGHT;
-  pieces[26].color = pieces[27].color = BLACK;
-  pieces[26].col = 1; pieces[27].col = 6;
-  pieces[26].row = 7; pieces[27].row = 7;
-  pieces[26].inPlay = pieces[27].inPlay = true;
-  pieces[26].model = blackKnight.getInstance();
-  pieces[27].model = blackKnight.getInstance();
+  pieces[26].pieceType = pieces[27].pieceType = PIECE_KNIGHT;
+  pieces[26].pieceColor = pieces[27].pieceColor = BLACK;
+  pieces[26].pieceCol = 1; pieces[27].pieceCol = 6;
+  pieces[26].pieceRow = 7; pieces[27].pieceRow = 7;
+  pieces[26].pieceInPlay = pieces[27].pieceInPlay = true;
+  pieces[26].pieceModel = blackKnight.getInstance();
+  pieces[27].pieceModel = blackKnight.getInstance();
 
   // black bishops
-  pieces[28].type = pieces[29].type = PIECE_BISHOP;
-  pieces[28].color = pieces[29].color = BLACK;
-  pieces[28].col = 2; pieces[29].col = 5;
-  pieces[28].row = 7; pieces[29].row = 7;
-  pieces[28].inPlay = pieces[29].inPlay = true;
-  pieces[28].model = blackBishop.getInstance();
-  pieces[29].model = blackBishop.getInstance();
+  pieces[28].pieceType = pieces[29].pieceType = PIECE_BISHOP;
+  pieces[28].pieceColor = pieces[29].pieceColor = BLACK;
+  pieces[28].pieceCol = 2; pieces[29].pieceCol = 5;
+  pieces[28].pieceRow = 7; pieces[29].pieceRow = 7;
+  pieces[28].pieceInPlay = pieces[29].pieceInPlay = true;
+  pieces[28].pieceModel = blackBishop.getInstance();
+  pieces[29].pieceModel = blackBishop.getInstance();
 
   // black queen
-  pieces[30].type = PIECE_QUEEN;
-  pieces[30].color = BLACK;
-  pieces[30].col = 3;
-  pieces[30].row = 7;
-  pieces[30].inPlay = true;
-  pieces[30].model = blackQueen.getInstance();
+  pieces[30].pieceType = PIECE_QUEEN;
+  pieces[30].pieceColor = BLACK;
+  pieces[30].pieceCol = 3;
+  pieces[30].pieceRow = 7;
+  pieces[30].pieceInPlay = true;
+  pieces[30].pieceModel = blackQueen.getInstance();
 
   // black king
-  pieces[31].type = PIECE_KING;
-  pieces[31].color = BLACK;
-  pieces[31].col = 4;
-  pieces[31].row = 7;
-  pieces[31].inPlay = true;
-  pieces[31].model = blackKing.getInstance();
+  pieces[31].pieceType = PIECE_KING;
+  pieces[31].pieceColor = BLACK;
+  pieces[31].pieceCol = 4;
+  pieces[31].pieceRow = 7;
+  pieces[31].pieceInPlay = true;
+  pieces[31].pieceModel = blackKing.getInstance();
 }
 
-void ChessGame::movePiece(int pieceIdx, int destRow, int destCol,
-                          bool captureMove /*= false*/)
+void ChessGame::initialize()
 {
-  pieceMoveStartRow = pieces[pieceIdx].row + 0.5f;
-  pieceMoveStartCol = pieces[pieceIdx].col + 0.5f;
+  chessBoard = new ChessBoard;
 
-  pieceMoveEndRow = destRow + 0.5f;
-  pieceMoveEndCol = destCol + 0.5f;
+  chessBoard->initialize();
+
+  setupWhitePieces();
+  setupBlackPieces();
+
+  for (int idx = 0; idx < 32; idx++) {
+    chessBoard->setBoardSpace(pieces[idx].pieceRow, pieces[idx].pieceCol,
+      pieces[idx].pieceType, pieces[idx].pieceColor);
+  }
+
+  selectedPieceIdx = -1;
+  currentCol = -1;
+  currentRow = -1;
+
+  currentMoveColor = WHITE;
+  checkColor = NO_COLOR;
+  gameState	= WAIT_STATE;
+}
+
+void ChessGame::update(float dt)
+{
+  chessBoard->clearBoardPieces();
+
+  for (int idx = 0; idx < 32; idx++) {
+    if (pieces[idx].pieceInPlay) {
+      if (pieces[idx].pieceModel)
+        pieces[idx].pieceModel->animate(dt);
+
+      chessBoard->setBoardSpace(pieces[idx].pieceRow, pieces[idx].pieceCol,
+        pieces[idx].pieceType, pieces[idx].pieceColor);
+    }
+  }	
+
+  updatePieceCapture(dt);
+  updatePieceMovement(dt);
+}
+
+void ChessGame::render()
+{
+  for (int idx = 0; idx < 32; idx++) {
+    if (pieces[idx].pieceInPlay) {
+      if (pieces[idx].pieceModel) {
+        // rotations are done elsewhere during moving and capture states
+        if ((gameState != MOVING_STATE) &&
+          (gameState != CAPTURE_STATE) &&
+          (gameState != KILL_STATE)) {
+            if (pieces[idx].pieceColor == WHITE)
+              pieces[idx].pieceModel->rotate(0.0f);
+            else if (pieces[idx].pieceColor == BLACK)
+              pieces[idx].pieceModel->rotate(180.0f);
+        }
+
+        // movement is done elsewhere during the MOVING_STATE
+        if ((gameState != MOVING_STATE) && (gameState != KILL_STATE))
+          pieces[idx].pieceModel->move((float)pieces[idx].pieceRow+0.5f,
+          0.0f, (float)pieces[idx].pieceCol+0.5f);
+
+        pieces[idx].pieceModel->render();
+      }
+    }
+  }
+}
+
+void ChessGame::release()
+{
+  chessBoard->release();
+
+  for (int idx = 0; idx < 32; idx++) {
+    if (pieces[idx].pieceModel) {
+      pieces[idx].pieceModel->unload();
+      delete pieces[idx].pieceModel;
+    }
+  }
+
+  delete chessBoard;
+}
+
+bool ChessGame::isPieceInPlay(int r, int c)
+{
+  for (int idx = 0; idx < 32; idx++) {
+    if (((pieces[idx].pieceRow == r) && (pieces[idx].pieceCol == c)) &&
+      (pieces[idx].pieceInPlay))
+      return true;
+  }
+
+  return false;
+}
+
+bool ChessGame::isPieceCaptured(char color, int r, int c)
+{
+  for (int idx = 0; idx < 32; idx++) {
+    if (((pieces[idx].pieceRow == r) && (pieces[idx].pieceCol == c)) &&
+      (pieces[idx].pieceInPlay) && (pieces[idx].pieceColor != color))
+      return true;
+  }
+
+  return false;
+}
+
+void ChessGame::updatePieceMovement(float dt)
+{
+  if (gameState == MOVING_STATE) {
+    if (pieces[pieceMovingIdx].pieceModel->getAnimation() == MD2Instance::_STATIC) {
+      pieces[pieceMovingIdx].pieceModel->rotate(pieceRotateAngle);
+      pieces[pieceMovingIdx].pieceModel->setAnimation(MD2Instance::RUN);
+    } else if (pieceMoveDistance > 0.75) {
+      // haven't reached the end yet
+      piecePos += pieceVelocity * dt;
+      pieceMoveDistance -= pieceVelocity.length() * dt;
+      pieceMoveCurrentRow = piecePos.x;
+      pieceMoveCurrentCol = piecePos.z;
+
+      pieces[pieceMovingIdx].pieceModel->rotate(pieceRotateAngle);
+      pieces[pieceMovingIdx].pieceModel->move(piecePos.z, 0.0, piecePos.x);
+    } else if ((pieceMoveDistance <= 0.75) && (!pieceKilled) &&
+      (pieceCaptureIdx != -1)) {
+        gameState = KILL_STATE;
+    } else if ((pieceMoveDistance <= 0.75) && (pieceMoveDistance > 0.0)) {
+      // haven't reached the end yet
+      piecePos += pieceVelocity * dt;
+      pieceMoveDistance -= pieceVelocity.length() * dt;
+      pieceMoveCurrentRow = piecePos.x;
+      pieceMoveCurrentCol = piecePos.z;
+
+      pieces[pieceMovingIdx].pieceModel->rotate(pieceRotateAngle);
+      pieces[pieceMovingIdx].pieceModel->move(piecePos.z, 0.0, piecePos.x);
+    } else {
+      pieces[pieceMovingIdx].pieceCol = (int)piecePos.x;
+      pieces[pieceMovingIdx].pieceRow = (int)piecePos.z;
+      pieces[pieceMovingIdx].pieceModel->setAnimation(MD2Instance::IDLE);
+
+      // done moving
+      gameState = WAIT_STATE;
+      pieceMovingIdx = -1;
+    }
+  } else if (gameState == CAPTURE_STATE) {
+    pieces[pieceMovingIdx].pieceModel->rotate(pieceRotateAngle);
+    if (!pieceKilled)
+      gameState = MOVING_STATE;
+  } else if ((gameState == KILL_STATE) && 
+    (pieces[pieceMovingIdx].pieceModel->getAnimation() == MD2Instance::_STATIC)) {
+      // done with attack animation
+      // move forward
+      if (pieceCaptureDeadTime > 1.5f) {
+        gameState = MOVING_STATE;
+        pieceKilled = true;
+      } 
+  } else if (gameState == KILL_STATE) {
+    pieces[pieceMovingIdx].pieceModel->setAnimation(MD2Instance::ATTACK,
+      MD2Instance::_STATIC);
+  }
+}
+
+void ChessGame::updatePieceCapture(float dt)
+{
+  if (gameState == KILL_STATE) {
+    if (pieces[pieceCaptureIdx].pieceModel->getAnimation() == MD2Instance::WAVE) {
+      if (pieceMoveDistance <= 0.75f) {
+        // flip off once more
+        pieces[pieceCaptureIdx].pieceModel->setAnimation(MD2Instance::WAVE,
+          MD2Instance::_STATIC);
+        pieceDying = false;
+      }
+    }
+
+    if (pieces[pieceCaptureIdx].pieceModel->getAnimation() == MD2Instance::_STATIC) {
+      // stopped last flip off, time to die
+      if ((pieces[pieceMovingIdx].pieceModel->getAnimation() == MD2Instance::_STATIC)
+        && (!pieceDying)) {
+          // set animation to death and have it stop on the last frame
+          pieces[pieceCaptureIdx].pieceModel->setAnimation(MD2Instance::DEATH1,
+            MD2Instance::_STATIC);
+          pieceDying = true;
+          pieceCaptureDeadTime = 0.0f;
+      }
+
+      pieceCaptureDeadTime += dt;
+
+      if (pieceCaptureDeadTime >= 1.5f) {
+        pieceCaptureDeadTime = 0.0f;
+        pieces[pieceCaptureIdx].pieceInPlay = false;
+        gameState = MOVING_STATE;
+        pieceCaptureIdx = -1;
+      }
+    }
+  } else if (gameState == KILL_STATE) {
+
+  }
+}
+
+void ChessGame::movePiece(int pieceIdx, int destRow, int destCol, bool captureMove)
+{
+  pieceMoveStartRow = pieces[pieceIdx].pieceRow + 0.5f;
+  pieceMoveStartCol = pieces[pieceIdx].pieceCol + 0.5f;
+  pieceMoveEndRow   = destRow + 0.5f;
+  pieceMoveEndCol   = destCol + 0.5f;
 
   pieceMoveCurrentRow = pieceMoveStartRow;
   pieceMoveCurrentCol = pieceMoveStartCol;
@@ -187,13 +372,13 @@ void ChessGame::movePiece(int pieceIdx, int destRow, int destCol,
   pieceCaptureIdx = -1;
 
   if ((gameState == CAPTURE_STATE) || (gameState == MOVING_STATE))
-    pieces[pieceIdx].model->setAnimation(MD2Instance::RUN);
-}
+    pieces[pieceIdx].pieceModel->setAnimation(MD2Instance::RUN);
+} 
 
 void ChessGame::movePieceImmediate(int pieceIdx, int destRow, int destCol)
 {
-  pieces[pieceIdx].row = destRow;
-  pieces[pieceIdx].col = destCol;
+  pieces[pieceIdx].pieceRow = destRow;
+  pieces[pieceIdx].pieceCol = destCol;
 }
 
 void ChessGame::capturePiece(int pieceIdx, int destRow, int destCol)
@@ -201,86 +386,60 @@ void ChessGame::capturePiece(int pieceIdx, int destRow, int destCol)
   gameState = CAPTURE_STATE;
   pieceCaptureIdx = pieceIdx;
 
-  pieces[pieceIdx].model->setAnimation(MD2Instance::WAVE);
-}
-
-bool ChessGame::isPieceInPlay(int r, int c)
-{
-  for (int idx = 0; idx < 32; idx++) {
-    if (((pieces[idx].row == r) && (pieces[idx].col == c)) &&
-      (pieces[idx].inPlay))
-      return true;
-  }
-
-  return false;
+  pieces[pieceIdx].pieceModel->setAnimation(MD2Instance::WAVE);
 }
 
 bool ChessGame::isValidPawnMove(int pieceIdx, int newRow, int newCol)
 {
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
+  // same position
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
     return false;
 
-  if (pieces[pieceIdx].color == WHITE) {
-
+  if (pieces[pieceIdx].pieceColor == WHITE) {
     // can only increase row, or rank, of pawns by one
     // unless it's current row/rank is 1 (starts at 0)
-    if ((newRow == (pieces[pieceIdx].row + 1)) && 
-      (newCol == pieces[pieceIdx].col)) {
-
-        // make sure no pieces are already in this position
+    if ((newRow == (pieces[pieceIdx].pieceRow + 1)) &&
+      (newCol == pieces[pieceIdx].pieceCol)) {
+        // make sure no pieces are already in this location
         if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
           return (!isPieceInPlay(newRow, newCol));
-
-    } else if ((newRow == (pieces[pieceIdx].row + 2)) &&
-      (pieces[pieceIdx].row == 1) && (newCol == pieces[pieceIdx].col)) {
-
+    } else if ((newRow == (pieces[pieceIdx].pieceRow + 2)) &&
+      (pieces[pieceIdx].pieceRow == 1) && (newCol == pieces[pieceIdx].pieceCol)) {
         // make sure no pieces are already in this location
         // make sure no pieces are already in this location
         if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
           return (!isPieceInPlay(newRow, newCol));
-
-    } else if (((newRow == (pieces[pieceIdx].row + 1)) && 
-      (newCol == pieces[pieceIdx].col + 1)) ||
-      ((newRow == (pieces[pieceIdx].row + 1)) && 
-      (newCol == pieces[pieceIdx].col - 1))) {
-
-        // capture move
-        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
-          return false;
-        else
-          return isPieceCaptured(pieces[pieceIdx].color, newRow, newCol);
-
-    } else
-      return false;
-
-  } else if (pieces[pieceIdx].color = BLACK) {
-
-    // can only increase row, or rank, of pawns by one
-    // unless it's current row/rank is 1 (starts at 0)
-    if ((newRow == (pieces[pieceIdx].row - 1)) &&
-      (newCol == pieces[pieceIdx].col)) {
-
-        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
-          return (!isPieceInPlay(newRow, newCol));
-
-    } else if ((newRow == (pieces[pieceIdx].row - 2)) &&
-      (pieces[pieceIdx].row = 6) &&
-      (newCol == pieces[pieceIdx].col)) {
-
-        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
-          return (!isPieceInPlay(newRow, newCol));
-
-    } else if (((newRow == (pieces[pieceIdx].row - 1)) &&
-      (newCol == pieces[pieceIdx].col + 1)) ||
-      ((newRow == (pieces[pieceIdx].row - 1)) &&
-      (newCol == pieces[pieceIdx].col - 1))) {
-
+    } else if ( ((newRow == (pieces[pieceIdx].pieceRow + 1)) &&
+      (newCol == pieces[pieceIdx].pieceCol + 1)) || 
+      ((newRow == (pieces[pieceIdx].pieceRow + 1)) && 
+      (newCol == pieces[pieceIdx].pieceCol - 1)) ) {
         // capture move
         if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
           return false;
         else	// a piece is there
-          return isPieceCaptured(pieces[pieceIdx].color, newRow, newCol);
-
+          return isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol);
+    } else
+      return false;
+  } else if (pieces[pieceIdx].pieceColor == BLACK) {
+    // can only increase row, or rank, of pawns by one
+    // unless it's current row/rank is 1 (starts at 0)
+    if ((newRow == (pieces[pieceIdx].pieceRow - 1)) &&
+      (newCol == pieces[pieceIdx].pieceCol)) {
+        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
+          return (!isPieceInPlay(newRow, newCol));
+    } else if ((newRow == (pieces[pieceIdx].pieceRow - 2)) &&
+      (pieces[pieceIdx].pieceRow == 6) && (newCol == pieces[pieceIdx].pieceCol)) {
+        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE) 
+          return (!isPieceInPlay(newRow, newCol));
+    } else if ( ((newRow == (pieces[pieceIdx].pieceRow - 1)) &&
+      (newCol == pieces[pieceIdx].pieceCol + 1)) ||
+      ((newRow == (pieces[pieceIdx].pieceRow - 1)) &&
+      (newCol == pieces[pieceIdx].pieceCol - 1)) ) {
+        // capture move
+        if (chessBoard->getBoardSpace(newRow, newCol) == PIECE_NONE)
+          return false;
+        else	// a piece is there
+          return isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol);
     } else
       return false;
   }
@@ -291,80 +450,71 @@ bool ChessGame::isValidPawnMove(int pieceIdx, int newRow, int newCol)
 bool ChessGame::isValidRookMove(int pieceIdx, int newRow, int newCol)
 {
   // same position
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
     return false;
 
   // moving along same row
-  if ((newRow == (pieces[pieceIdx].row)) && (newCol != pieces[pieceIdx].col)) {
-    // iterate along spaces between current position and new position,
-    // and see if there are any pieces
-    if ((newCol - pieces[pieceIdx].col) > 0) {  // move in positive direction
-      for (int c = pieces[pieceIdx].col+1; c <= newCol; c++) {
-        if (chessBoard->getBoardSpace(pieces[pieceIdx].row, c) != PIECE_NONE) {
-          if (c == newCol) {	
-            // reached end of iteration, see if piece capture
-            if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-              return true;
-          }
-
-          return (!isPieceInPlay(pieces[pieceIdx].row, c));
-        }
-      }
-
-      // never found any pieces in the way
-      return true;
-    } else if ((newCol - pieces[pieceIdx].col) < 0) { // move in negative direction
-
-      for (int c = pieces[pieceIdx].col-1; c >= newCol; c--) {
-        if (chessBoard->getBoardSpace(pieces[pieceIdx].row, c) != PIECE_NONE) {
-          // reached end of iteration, see if piece capture
-          if (c == newCol) {
-            if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-              return true;
-          }
-
-          return (!isPieceInPlay(pieces[pieceIdx].row, c));
-        }
-      }
-
-      // never found any pieces obstructing the move
-      return true;
-    }
-
-    // selected the same square, not a move
-    return false;
-
-  } else if ((newRow != (pieces[pieceIdx].row)) && // moving along same column
-    (newCol == pieces[pieceIdx].col)) {
-      // iterate along spaces between current position and new position,
-      // and see if there are any pieces
-      if ((newRow - pieces[pieceIdx].row) > 0) {  // move in positive direction
-
-        for (int r = pieces[pieceIdx].row+1; r <= newRow; r++) {
-
-          if ((chessBoard->getBoardSpace(r, pieces[pieceIdx].col) != PIECE_NONE)) {
-            if (r == newRow) {// reached end of iteration, see if piece capture
-
-              if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
+  if ((newRow == (pieces[pieceIdx].pieceRow)) &&
+    (newCol != pieces[pieceIdx].pieceCol)) {
+      // iterate along spaces between current position and new position, and see if there are any pieces
+      if ((newCol - pieces[pieceIdx].pieceCol) > 0) {	 // move in positive direction
+        for (int c = pieces[pieceIdx].pieceCol+1; c <= newCol; c++) {
+          if (chessBoard->getBoardSpace(pieces[pieceIdx].pieceRow, c) != PIECE_NONE) {
+            if (c == newCol)	// reached end of iteration, see if piece capture
+              if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
                 return true;
-            }
 
-            return (!isPieceInPlay(r, pieces[pieceIdx].col));
+            return (!isPieceInPlay(pieces[pieceIdx].pieceRow, c));
           }
         }
 
         // never found any pieces in the way
         return true;
-      } else if ((newRow - pieces[pieceIdx].row) < 0) {// move in negative direction
-
-        for (int r = pieces[pieceIdx].row-1; r >= newRow; r--) {
-          if ((chessBoard->getBoardSpace(r, pieces[pieceIdx].col) != PIECE_NONE)) {
-            if (r == newRow) { // reached end of iteration, see if piece capture
-              if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
+      } else if ((newCol - pieces[pieceIdx].pieceCol) < 0) {  // move in negative direction
+        for (int c = pieces[pieceIdx].pieceCol-1; c >= newCol; c--) {
+          if (chessBoard->getBoardSpace(pieces[pieceIdx].pieceRow, c) != PIECE_NONE) {
+            if (c == newCol) { // reached end of iteration, see if piece capture
+              if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
                 return true;
             }
 
-            return (!isPieceInPlay(r, pieces[pieceIdx].col));
+            return (!isPieceInPlay(pieces[pieceIdx].pieceRow, c));
+          }
+        }
+
+        // never found any pieces obstructing the move
+        return true;
+      }
+
+      // selected the same square, not a move
+      return false;
+  } else if ((newRow != (pieces[pieceIdx].pieceRow)) &&
+    (newCol == pieces[pieceIdx].pieceCol)) {  // moving along same column
+      // iterate along spaces between current position and new position,
+      // and see if there are any pieces
+      if ((newRow - pieces[pieceIdx].pieceRow) > 0) {		// move in positive direction
+        for (int r = pieces[pieceIdx].pieceRow+1; r <= newRow; r++) {
+          if ((chessBoard->getBoardSpace(r, pieces[pieceIdx].pieceCol) != PIECE_NONE)) {
+            if (r == newRow) {  // reached end of iteration, see if piece capture
+              if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+                return true;
+            }
+
+            return (!isPieceInPlay(r, pieces[pieceIdx].pieceCol));
+          }
+        }
+
+        // never found any pieces in the way
+        return true;
+      } else if ((newRow - pieces[pieceIdx].pieceRow) < 0) {  // move in negative direction
+        for (int r = pieces[pieceIdx].pieceRow-1; r >= newRow; r--) {
+          if ((chessBoard->getBoardSpace(r, pieces[pieceIdx].pieceCol) != PIECE_NONE)) {
+            if (r == newRow) {  // reached end of iteration, see if piece capture
+              if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+                return true;
+            }
+
+            return (!isPieceInPlay(r, pieces[pieceIdx].pieceCol));
           }
         }
 
@@ -383,7 +533,7 @@ bool ChessGame::isValidRookMove(int pieceIdx, int newRow, int newCol)
 bool ChessGame::isValidKnightMove(int pieceIdx, int newRow, int newCol)
 {
   // same position
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
     return false;
 
   // knights have 8 possible moves, provided all these moves are within the bounds of the board
@@ -400,23 +550,39 @@ bool ChessGame::isValidKnightMove(int pieceIdx, int newRow, int newCol)
   */
 
   // move 1
-  if ((pieces[pieceIdx].row == newRow - 2) && (pieces[pieceIdx].col == newCol + 1)) {
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow - 2) && (pieces[pieceIdx].col == newCol - 1)) {  // move 2
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow - 1) && (pieces[pieceIdx].col == newCol - 2)) {  // move 3
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow + 1) && (pieces[pieceIdx].col == newCol - 2)) {  // move 4
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow + 2) && (pieces[pieceIdx].col == newCol - 1)) {  // move 5
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow + 2) && (pieces[pieceIdx].col == newCol + 1)) {  // move 6
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow + 1) && (pieces[pieceIdx].col == newCol + 2)) {  // move 7
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
-  } else if ((pieces[pieceIdx].row == newRow - 1) && (pieces[pieceIdx].col == newCol + 2)) {  // move 8
-    return (!isPieceInPlay(newRow, newCol) || isPieceCaptured(pieces[pieceIdx].color, newRow, newCol));
+  if ((pieces[pieceIdx].pieceRow == newRow - 2) && (pieces[pieceIdx].pieceCol == newCol + 1)) {
+    return (!isPieceInPlay(newRow, newCol) ||
+      isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow - 2) &&    // move 2
+    (pieces[pieceIdx].pieceCol == newCol - 1)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow - 1) &&    // move 3
+    (pieces[pieceIdx].pieceCol == newCol - 2)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow + 1) &&    // move 4
+    (pieces[pieceIdx].pieceCol == newCol - 2)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow + 2) &&    // move 5
+    (pieces[pieceIdx].pieceCol == newCol - 1)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow + 2) &&    // move 6
+    (pieces[pieceIdx].pieceCol == newCol + 1)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow + 1) &&    // move 7
+    (pieces[pieceIdx].pieceCol == newCol + 2)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
+  } else if ((pieces[pieceIdx].pieceRow == newRow - 1) &&    // move 8
+    (pieces[pieceIdx].pieceCol == newCol + 2)) {
+      return (!isPieceInPlay(newRow, newCol) ||
+        isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol));
   }
+
   return false;
 }
 
@@ -426,7 +592,7 @@ bool ChessGame::isValidBishopMove(int pieceIdx, int newRow, int newCol)
   int c;
 
   // same position
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
     return false;
 
   // first verify that the new position is on a diagonal
@@ -434,18 +600,18 @@ bool ChessGame::isValidBishopMove(int pieceIdx, int newRow, int newCol)
   // if the sum of the row and col in the new position is the same
   // as the row and col of the current position then the move is diagonal
 
-  if ((pieces[pieceIdx].row <= newRow) && (pieces[pieceIdx].col <= newCol)) {
+  if ((pieces[pieceIdx].pieceRow <= newRow) && (pieces[pieceIdx].pieceCol <= newCol)) {
     // move up,left  \ diagonal
-    if (!((pieces[pieceIdx].row + newCol) == (newRow + pieces[pieceIdx].col)))
+    if (!((pieces[pieceIdx].pieceRow + newCol) == (newRow + pieces[pieceIdx].pieceCol)))
       return false;
 
-    r = pieces[pieceIdx].row + 1;
-    c = pieces[pieceIdx].col + 1;
+    r = pieces[pieceIdx].pieceRow + 1;
+    c = pieces[pieceIdx].pieceCol + 1;
 
     // check for obstructing pieces
     while ((r <= newRow) && (c <= newCol)) {
       if ((r == newRow) && (c == newCol))
-        if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
+        if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
           return true;
 
       if (isPieceInPlay(r, c))
@@ -454,113 +620,91 @@ bool ChessGame::isValidBishopMove(int pieceIdx, int newRow, int newCol)
       r++;
       c++;
     }
-  } else if ((pieces[pieceIdx].row <= newRow) && (pieces[pieceIdx].col >= newCol)) {
-    // move up, right \ diagonal
-    if (!((pieces[pieceIdx].row + pieces[pieceIdx].col) == (newRow + newCol)))
-      return false;
-
-    r = pieces[pieceIdx].row + 1;
-    c = pieces[pieceIdx].col - 1;
-
-    // check for obstructing pieces
-    while ((r <= newRow) && (c >= newCol)) {
-      if ((r == newRow) && (c == newCol))
-        if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-          return true;
-
-      if (isPieceInPlay(r, c))
+  } else if ((pieces[pieceIdx].pieceRow <= newRow) &&
+    (pieces[pieceIdx].pieceCol >= newCol)) {
+      // move up, right \ diagonal
+      if (!((pieces[pieceIdx].pieceRow + pieces[pieceIdx].pieceCol) == (newRow + newCol)))
         return false;
 
-      r++;
-      c--;
-    }
-  } else if ((pieces[pieceIdx].row >= newRow) && (pieces[pieceIdx].col >= newCol)) {
-    // swap columns for / diagonal
-    // move down, right / diagonal
-    if (!((pieces[pieceIdx].row + newCol) == (newRow + pieces[pieceIdx].col)))
-      return false;
+      r = pieces[pieceIdx].pieceRow + 1;
+      c = pieces[pieceIdx].pieceCol - 1;
 
-    r = pieces[pieceIdx].row - 1;
-    c = pieces[pieceIdx].col - 1;
+      // check for obstructing pieces
+      while ((r <= newRow) && (c >= newCol)) {
+        if ((r == newRow) && (c == newCol))
+          if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+            return true;
 
-    // check for obstructing pieces
-    while ((r >= newRow) && (c >= newCol)) {
-      if ((r == newRow) && (c == newCol))
-        if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-          return true;
+        if (isPieceInPlay(r, c))
+          return false;
 
-      if (isPieceInPlay(r, c))
+        r++;
+        c--;
+      }
+  } else if ((pieces[pieceIdx].pieceRow >= newRow) &&
+    (pieces[pieceIdx].pieceCol >= newCol)) {
+      // swap columns for / diagonal
+      // move down, right / diagonal
+      if (!((pieces[pieceIdx].pieceRow + newCol) == 
+        (newRow + pieces[pieceIdx].pieceCol)))
         return false;
 
-      r--;
-      c--;
-    }
-  } else if ((pieces[pieceIdx].row >= newRow) && (pieces[pieceIdx].col <= newCol)) {
-    // swap columns for / diagonal
-    // move down, left / diagonal
-    if (!((pieces[pieceIdx].row + pieces[pieceIdx].col) == (newRow + newCol)))
-      return false;
+      r = pieces[pieceIdx].pieceRow - 1;
+      c = pieces[pieceIdx].pieceCol - 1;
 
-    r = pieces[pieceIdx].row - 1;
-    c = pieces[pieceIdx].col + 1;
+      // check for obstructing pieces
+      while ((r >= newRow) && (c >= newCol)) {
+        if ((r == newRow) && (c == newCol))
+          if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+            return true;
 
-    // check for obstructing pieces
-    while ((r >= newRow) && (c <= newCol)) {
-      if ((r == newRow) && (c == newCol))
-        if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-          return true;
+        if (isPieceInPlay(r, c))
+          return false;
 
-      if (isPieceInPlay(r, c))
+        r--;
+        c--;
+      }
+  } else if ((pieces[pieceIdx].pieceRow >= newRow) &&
+    (pieces[pieceIdx].pieceCol <= newCol)) {
+      // swap columns for / diagonal
+      // move down, left / diagonal
+      if (!((pieces[pieceIdx].pieceRow + pieces[pieceIdx].pieceCol) ==
+        (newRow + newCol)))
         return false;
 
-      r--;
-      c++;
-    }
-  }
-  else
+      r = pieces[pieceIdx].pieceRow - 1;
+      c = pieces[pieceIdx].pieceCol + 1;
+
+      // check for obstructing pieces
+      while ((r >= newRow) && (c <= newCol)) {
+        if ((r == newRow) && (c == newCol))
+          if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+            return true;
+
+        if (isPieceInPlay(r, c))
+          return false;
+
+        r--;
+        c++;
+      }
+  } else {
     return false;
-
-  //if (abs(pieces[pieceIdx].row - newRow) == abs(pieces[pieceIdx].col - newCol))
-  //{
-  //		return true;
-  //	}
-  //	else
-  //		return false;
+  }
 
   return true;
 }
 
 bool ChessGame::isValidQueenMove(int pieceIdx, int newRow, int newCol)
 {
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
+  // same position
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
     return false;
 
-  if (isValidRookMove(pieceIdx, newRow, newCol) || isValidBishopMove(pieceIdx, newRow, newCol))
+  if (isValidRookMove(pieceIdx, newRow, newCol) ||
+    isValidBishopMove(pieceIdx, newRow, newCol))
     return true;
 
   return false;
-}
-
-bool ChessGame::isValidKingMove(int pieceIdx, int newRow, int newCol)
-{
-  // same position
-  if ((newRow == pieces[pieceIdx].row) && (newCol == pieces[pieceIdx].col))
-    return false;
-
-  if (isCastlingMove(pieceIdx, newRow, newCol))
-    return true;
-
-  // kings may move only one space at a time, in any direction
-  if ((abs(newRow - pieces[pieceIdx].row) > 1) || (abs(newCol - pieces[pieceIdx].col) > 1))
-    return false;
-
-  if (isPieceCaptured(pieces[pieceIdx].color, newRow, newCol))
-    return true;
-
-  if (isPieceInPlay(newRow, newCol))
-    return false;
-
-  return true;
 }
 
 bool ChessGame::isCastlingMove(int pieceIdx, int newRow, int newCol)
@@ -574,28 +718,27 @@ bool ChessGame::isCastlingMove(int pieceIdx, int newRow, int newCol)
   // 6. The king would be in check after castling. 
 
   // check for condition #1
-  if ((pieces[pieceIdx].color == WHITE) &&
-    (pieces[pieceIdx].row == 0) &&
-    (pieces[pieceIdx].col == 4)) {
-      // check for condition #3 and #5
-      // row 0
-      if (newCol == 2) { // queenside
-        if (isPieceInPlay(0, 3) || isPieceInPlay(0, 2) || isPieceInPlay(0, 1))
-          return false;
-      } else if (newCol == 6)	{ // kingside
-        if (isPieceInPlay(0, 5) || isPieceInPlay(0, 6))
-          return false;
-      }
+  if ((pieces[pieceIdx].pieceColor == WHITE) && (pieces[pieceIdx].pieceRow == 0) &&
+    (pieces[pieceIdx].pieceCol == 4))
+  {
+    // check for condition #3 and #5
+    // row 0
+    if (newCol == 2) { // queen side
+      if (isPieceInPlay(0, 3) || isPieceInPlay(0, 2) || isPieceInPlay(0, 1))
+        return false;
+    } else if (newCol == 6)	{ // king side
+      if (isPieceInPlay(0, 5) || isPieceInPlay(0, 6))
+        return false;
+    }
 
-      return true;
-
-  } else if (pieces[pieceIdx].color == BLACK) {
+    return true;
+  } else if (pieces[pieceIdx].pieceColor == BLACK) {
     // check for condition #3 and #5
     // row 7
-    if (newCol == 2) { // queenside
+    if (newCol == 2) { // queen side
       if (isPieceInPlay(7, 3) || isPieceInPlay(7, 2) || isPieceInPlay(7, 1))
         return false;
-    } else if (newCol == 6)	{ // kingside
+    } else if (newCol == 6)	{ // king side
       if (isPieceInPlay(7, 5) || isPieceInPlay(7, 6))
         return false;
     }
@@ -604,202 +747,72 @@ bool ChessGame::isCastlingMove(int pieceIdx, int newRow, int newCol)
   return true;
 }
 
-bool ChessGame::isPieceCaptured(char color, int r, int c)
+bool ChessGame::isValidKingMove(int pieceIdx, int newRow, int newCol)
 {
-  for (int idx = 0; idx < 32; idx++) {
-    if (((pieces[idx].row == r) && (pieces[idx].col == c)) &&
-      (pieces[idx].inPlay) && (pieces[idx].color != color))
-      return true;
+  // same position
+  if ((newRow == pieces[pieceIdx].pieceRow) && (newCol == pieces[pieceIdx].pieceCol))
+    return false;
+
+  if (isCastlingMove(pieceIdx, newRow, newCol))
+    return true;
+
+  // kings may move only one space at a time, in any direction
+  if ((abs(newRow - pieces[pieceIdx].pieceRow) > 1) || (abs(newCol - pieces[pieceIdx].pieceCol) > 1))
+    return false;
+
+  if (isPieceCaptured(pieces[pieceIdx].pieceColor, newRow, newCol))
+    return true;
+
+  if (isPieceInPlay(newRow, newCol))
+    return false;
+
+  return true;
+}
+
+bool ChessGame::isValidMove(int pieceIdx, int newRow, int newCol)
+{
+  if (pieces[pieceIdx].pieceColor == currentMoveColor) {
+    switch (pieces[pieceIdx].pieceType) {
+      case PIECE_PAWN:
+        return isValidPawnMove(pieceIdx, newRow, newCol);
+
+      case PIECE_ROOK:
+        return isValidRookMove(pieceIdx, newRow, newCol);
+
+      case PIECE_KNIGHT:
+        return isValidKnightMove(pieceIdx, newRow, newCol);
+
+      case PIECE_BISHOP:
+        return isValidBishopMove(pieceIdx, newRow, newCol);
+
+      case PIECE_QUEEN:
+        return isValidQueenMove(pieceIdx, newRow, newCol);
+
+      case PIECE_KING:
+        return isValidKingMove(pieceIdx, newRow, newCol);
+    }
   }
 
   return false;
 }
 
-void ChessGame::updatePieceMovement(float dt)
-{
-  if (gameState == MOVING_STATE) {
-    if (pieces[pieceMovingIdx].model->getAnimation() == MD2Instance::_STATIC) {
-      pieces[pieceMovingIdx].model->rotation(pieceRotateAngle);
-      pieces[pieceMovingIdx].model->setAnimation(MD2Instance::RUN);
-    } else if (pieceMoveDistance > 0.75) {
-      piecePos += pieceVelocity * dt;
-      pieceMoveDistance -= pieceVelocity.length() * dt;
-      pieceMoveCurrentRow = piecePos.x;
-      pieceMoveCurrentCol = piecePos.z;
-
-      pieces[pieceMovingIdx].model->rotation(pieceRotateAngle);
-      pieces[pieceMovingIdx].model->move(piecePos.z, 0.0, piecePos.x);
-    } else if ((pieceMoveDistance <= 0.75) && (!pieceKilled) &&
-      (pieceCaptureIdx != -1)) {
-        gameState = KILL_STATE;
-    } else if ((pieceMoveDistance <= 0.75) && (pieceMoveDistance > 0.0)) {
-      piecePos += pieceVelocity * dt;
-      pieceMoveDistance -= pieceVelocity.length() * dt;
-      pieceMoveCurrentRow = piecePos.x;
-      pieceMoveCurrentCol = piecePos.z;
-
-      pieces[pieceMovingIdx].model->rotation(pieceRotateAngle);
-      pieces[pieceMovingIdx].model->move(piecePos.z, 0.0, piecePos.x);
-    } else {
-      pieces[pieceMovingIdx].col = (int)piecePos.x;
-      pieces[pieceMovingIdx].row = (int)piecePos.z;
-      pieces[pieceMovingIdx].model->setAnimation(MD2Instance::IDLE);
-
-      // done moving
-      gameState = WAIT_STATE;
-      pieceMovingIdx = -1;
-    }
-  } else if (gameState == CAPTURE_STATE) {
-    pieces[pieceMovingIdx].model->rotation(pieceRotateAngle);
-    if (!pieceKilled)
-      gameState = MOVING_STATE;
-  } else if ((gameState == KILL_STATE) && 
-    (pieces[pieceMovingIdx].model->getAnimation() == MD2Instance::_STATIC)) {
-      // done with attack animation
-      // move forward
-      if (pieceCaptureDeadTime > 1.5f) {
-        gameState = MOVING_STATE;
-        pieceKilled = true;
-      }
-  } else if (gameState == KILL_STATE) {
-    pieces[pieceMovingIdx].model->setAnimation(MD2Instance::ATTACK,
-      MD2Instance::_STATIC);
-  }
-}
-
-void ChessGame::updatePieceCapture(float dt)
-{
-  if (gameState == KILL_STATE) {
-    if (pieces[pieceCaptureIdx].model->getAnimation() == MD2Instance::WAVE) {
-      if (pieceMoveDistance <= 0.75f) {
-        pieces[pieceCaptureIdx].model->setAnimation(MD2Instance::WAVE,
-          MD2Instance::_STATIC);
-        pieceDying = false;
-      }
-    }
-
-    if (pieces[pieceCaptureIdx].model->getAnimation() == MD2Instance::_STATIC) {
-      if ((pieces[pieceMovingIdx].model->getAnimation() ==
-        MD2Instance::_STATIC) && (!pieceDying)) {
-          pieces[pieceCaptureIdx].model->setAnimation(MD2Instance::DEATH1,
-            MD2Instance::_STATIC);
-          pieceDying = true;
-          pieceCaptureDeadTime = 0.0f;
-      }
-
-      pieceCaptureDeadTime += dt;
-
-      if (pieceCaptureDeadTime >= 1.5f) {
-        pieceCaptureDeadTime = 0.0f;
-        pieces[pieceCaptureIdx].inPlay = false;
-        gameState = MOVING_STATE;
-        pieceCaptureIdx = -1;
-      }
-    }
-  } else if (gameState == KILL_STATE) {
-
-  }
-}
-
-
-// public methods
-void ChessGame::initialize()
-{
-  chessBoard = new ChessBoard;
-
-  chessBoard->initialize();
-
-  setupBlackPieces();
-  setupWhitePieces();
-
-  for (int idx = 0; idx < 32; idx++)
-    chessBoard->setBoardSpace(pieces[idx].row, pieces[idx].col,
-    pieces[idx].type, pieces[idx].color);
-
-  selectedPieceIdx = -1;
-  currentCol = -1;
-  currentRow = -1;
-
-  currentMoveColor = WHITE;
-  checkColor = NO_COLOR;
-  gameState = WAIT_STATE;
-}
-
-void ChessGame::update(float dt)
-{
-  chessBoard->clearBoardPieces();
-
-  for (int idx = 0; idx < 32; idx++) {
-    if (pieces[idx].inPlay) {
-      if (pieces[idx].model)
-        pieces[idx].model->animate(dt);
-
-      chessBoard->setBoardSpace(pieces[idx].row, pieces[idx].col,
-        pieces[idx].type, pieces[idx].color);
-    }
-  }
-
-  updatePieceCapture(dt);
-  updatePieceMovement(dt);
-}
-
-void ChessGame::render()
-{
-  for (int idx = 0; idx < 32; idx++) {
-    if (pieces[idx].inPlay) {
-      if (pieces[idx].model) {
-        // rotation are done elsewhere during moving and capture states
-        if ((gameState != MOVING_STATE) &&
-          (gameState != CAPTURE_STATE) &&
-          (gameState != KILL_STATE)) {
-            if (pieces[idx].color == WHITE)
-              pieces[idx].model->rotation(0.0f);
-            else if (pieces[idx].color == BLACK)
-              pieces[idx].model->rotation(180.0f);
-        }
-
-        if ((gameState != MOVING_STATE) && (gameState != KILL_STATE))
-          pieces[idx].model->move((float)pieces[idx].row + 0.5f, 0.0f,
-          (float)pieces[idx].col + 0.5f);
-
-        pieces[idx].model->render();
-      }
-    }
-  }
-}
-
-void ChessGame::release()
-{
-  chessBoard->release();
-
-  for (int idx = 0; idx < 32; idx++) {
-    if (pieces[idx].model) {
-      pieces[idx].model->unload();
-      delete pieces[idx].model;
-    }
-  }
-
-  delete chessBoard;
-}
-
-void ChessGame::onSelection(float row, float col)
+void ChessGame::onSelection(float col, float row)
 {
   for (int x = 0; x < 8; x++)
     for (int y = 0; y < 8; y++)
-      chessBoard->disableHightlight(x, y);
+      chessBoard->disableHighlight(x, y);
 
   if (gameState == WAIT_STATE) {
     if (((col <= 8.0) && (col >= 0.0)) && ((row >= 0.0) && (row <= 8.0))) {
       if (selectedPieceIdx != -1) {
         bool pieceCapture = false;
 
-        // see if a piece of the opposite color is at the new position. if so,
-        // then capture
+        // see if a piece of the opposite color is at the new position. if so, then capture
         for (int idx = 0; idx < 32; idx++) {
-          if ((pieces[idx].row == (int)row) &&
-            (pieces[idx].col == (int)col) &&
-            pieces[idx].inPlay &&
-            (pieces[selectedPieceIdx].color != pieces[idx].color)) {
+          if ((pieces[idx].pieceRow == (int)row) &&
+            (pieces[idx].pieceCol == (int)col) &&
+            pieces[idx].pieceInPlay &&
+            (pieces[selectedPieceIdx].pieceColor != pieces[idx].pieceColor)) {
               // do we have a capture?
               if ((isPieceCaptured(currentMoveColor, (int)row, (int)col)) &&
                 (isValidMove(selectedPieceIdx, (int)row, (int)col))) {
@@ -815,6 +828,7 @@ void ChessGame::onSelection(float row, float col)
                     currentMoveColor = BLACK;
                   else if (currentMoveColor == BLACK)
                     currentMoveColor = WHITE;
+
                   break;
               }
           }
@@ -837,7 +851,7 @@ void ChessGame::onSelection(float row, float col)
               movePieceImmediate(24, 7, 3);
           }
 
-          movePieceImmediate(selectedPieceIdx, (int)row, (int)col);
+          movePiece(selectedPieceIdx, (int)row, (int)col);
 
           // we've moved, so now it's the other color's turn to move
           if (currentMoveColor == WHITE)
@@ -855,7 +869,7 @@ void ChessGame::onSelection(float row, float col)
 
         // check through pieces for this location, if a piece is there, select the piece
         for (int idx = 0; idx < 32; idx++) {
-          if ((pieces[idx].row == (int)row) && (pieces[idx].col == (int)col) && (pieces[idx].inPlay)) {
+          if ((pieces[idx].pieceRow == (int)row) && (pieces[idx].pieceCol == (int)col) && (pieces[idx].pieceInPlay)) {
             selectedPieceIdx = idx;
             break;
           }
@@ -870,31 +884,4 @@ void ChessGame::onSelection(float row, float col)
       currentCol = -1;
     }
   }
-}
-
-bool ChessGame::isValidMove(int pieceIdx, int newRow, int newCol)
-{
-  if (pieces[pieceIdx].color == currentMoveColor) {
-    switch (pieces[pieceIdx].type) {
-      case PIECE_PAWN:
-        return isValidPawnMove(pieceIdx, newRow, newCol);
-
-      case PIECE_ROOK:
-        return isValidRookMove(pieceIdx, newRow, newCol);
-
-      case PIECE_KNIGHT:
-        return isValidKnightMove(pieceIdx, newRow, newCol);
-
-      case PIECE_BISHOP:
-        return isValidBishopMove(pieceIdx, newRow, newCol);
-
-      case PIECE_QUEEN:
-        return isValidQueenMove(pieceIdx, newRow, newCol);
-
-      case PIECE_KING:
-        return isValidKingMove(pieceIdx, newRow, newCol);
-    }
-  }
-
-  return false;
 }

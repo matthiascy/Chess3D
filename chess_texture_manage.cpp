@@ -19,210 +19,179 @@ TextureMgr::~TextureMgr()
 {
 
 }
-
-int TextureMgr::convertStrToFilter(char* str)
+int TextureMgr::convertStrToFilter(char *str)
 {
-    if (!strcmp(strupr(str), "LOW"))
-        return FILTER_LOW;
-    else if (!strcmp(strupr(str), "MED"))
-        return FILTER_MED;
-    else if (!strcmp(strupr(str), "HI"))
-        return FILTER_HI;
-    else if (!strcmp(strupr(str), "BEST"))
-        return FILTER_BEST;
-    else
-        return FILTER_LOW;
+  if (!strcmp(strupr(str), "LOW"))
+    return FILTER_LOW;
+  else if (!strcmp(strupr(str), "MED"))
+    return FILTER_MED;
+  else if (!strcmp(strupr(str), "HI"))
+    return FILTER_HI;
+  else if (!strcmp(strupr(str), "BEST"))
+    return FILTER_BEST;
+  else
+    return FILTER_LOW;
 }
 
-int TextureMgr::convertStrToWrap(char* str)
+int TextureMgr::convertStrToWrap(char *str)
 {
-    if (!strcmp(strupr(str), "REPEAT"))
-        return GL_REPEAT;
-    else if (!strcmp(strupr(str), "CLAMP"))
-        return GL_CLAMP;
-    else if (!strcmp(strupr(str), "CLAMPEDGE"))
-        return GL_CLAMP_TO_EDGE;
-    else if (!strcmp(strupr(str), "CLAMPBORDER"))
-        return GL_CLAMP_TO_BORDER;
-    else if (!strcmp(strupr(str), "MIRROR"))
-        return GL_MIRRORED_REPEAT;
-    else
-        return GL_REPEAT;
+  if (!strcmp(strupr(str), "REPEAT"))
+    return GL_REPEAT;
+  else if (!strcmp(strupr(str), "CLAMP"))
+    return GL_CLAMP;
+  else if (!strcmp(strupr(str), "CLAMPEDGE"))
+    return GL_CLAMP_TO_EDGE;
+  else if (!strcmp(strupr(str), "CLAMPBORDER"))
+    return GL_CLAMP_TO_BORDER;
+  else if (!strcmp(strupr(str), "MIRROR"))
+    return GL_MIRRORED_REPEAT;
+  else
+    return GL_REPEAT;
 }
 
-int TextureMgr::convertStrToTexEnv(char* str)
+int TextureMgr::convertStrToTexEnv(char *str)
 {
-    if (!strcmp(strupr(str), "REPLACE"))
-        return GL_REPLACE;
-    else if (!strcmp(strupr(str), "MODULATE"))
-        return GL_MODULATE;
-    else if (!strcmp(strupr(str), "DECAL"))
-        return GL_DECAL;
-    else if (!strcmp(strupr(str), "BLEND"))
-        return GL_BLEND;
-    else if (!strcmp(strupr(str), "ADD"))
-        return GL_ADD;
-    else
-        return GL_REPLACE;
+  if (!strcmp(strupr(str), "REPLACE"))
+    return GL_REPLACE;
+  else if (!strcmp(strupr(str), "MODULATE"))
+    return GL_MODULATE;
+  else if (!strcmp(strupr(str), "DECAL"))
+    return GL_DECAL;
+  else if (!strcmp(strupr(str), "BLEND"))
+    return GL_BLEND;
+  else if (!strcmp(strupr(str), "ADD"))
+    return GL_ADD;
+  else
+    return GL_REPLACE;
 }
 
-bool TextureMgr::loadTextures(char* textureDataFile)
+bool TextureMgr::loadTextures(char *textureDataFile)
 {
-    // texture data file format:
-    // c++ style '//' at start of line is a comment
-    // texturefilename low/med/high/bestfiltermode
+  // Texture data file format:
+  // C++ style '//' at start of line is a comment
+  // texturefilename   low/med/high/bestfiltermode
 
-    FILE* file;
-    file = fopen(textureDataFile, "r");
+  FILE *fptr;
+  fptr = fopen(textureDataFile, "r");
 
-    if (!file)
-        return false;
+  if (!fptr)
+    return false;
 
-    numberTextures = 0;
+  numberTextures = 0;
 
-    // read to EOF
-    while ((!feof(file)) && (numberTextures < MAX_TEXTURES)) {
-        char line[255];
-        fgets(line, 255, file);
+  // read to EOF
+  while ((!feof(fptr)) && (numberTextures < MAX_TEXTURES)) {
+    char line[255];
+    fgets(line, 255, fptr);
 
-        // only read if this line is not comment
-        if ((line[0] != '/') && (line[1] != '/')) {
-            char texName[30] = { '\0' };
-            char fileName[30] = { '\0' };
-            char filterDetail[5] = { '\0' };
-            char wrapMode[10] = { '\0' };
-            char env[10] = { '\0' };
+    // only read if this line is not a comment
+    if ((line[0] != '/') && (line[1] != '/')) {
+      char texName[30] = { '\0' };
+      char filename[30] = { '\0' };
+      char filterDetail[5] = { '\0' };
+      char wrapMode[10] = { '\0' };
+      char env[10] = { '\0' };
 
-            sscanf(line, "%s %s %s %s %s", texName, fileName, filterDetail,
-                wrapMode, env);
+      sscanf(line, "%s %s %s %s %s", texName, filename, filterDetail, wrapMode, env);
 
-            textureObjects[numberTextures].inUse = true;
-            strcpy(textureObjects[numberTextures].textureName, texName);
+      textureObjects[numberTextures].inUse = true;
+      strcpy(textureObjects[numberTextures].textureName, texName);
 
-            // load texture image data
-            TargaImage imgData;
+      // load texture image data
+      TargaImage imgData;
 
-            imgData.load(fileName);
-            imgData.convertRGBTORGBA(255);
+      imgData.load(filename);
+      imgData.convertRGBToRGBA(255);
 
-            // generate texture object
-            glGenTextures(1, &(textureObjects[numberTextures].textureObjectID));
+      // generate texture object
+      glGenTextures(1, &(textureObjects[numberTextures].textureObjectID));
 
-            // make the texture the current one
-            glBindTexture(GL_TEXTURE_2D, 
-                textureObjects[numberTextures].textureObjectID);
-            
-            int wrap = convertStrToWrap(wrapMode);
-            int filter = convertStrToFilter(filterDetail);
-            int texenv = convertStrToTexEnv(env);
+      // Make the texture the current one
+      glBindTexture(GL_TEXTURE_2D, textureObjects[numberTextures].textureObjectID);
 
-            // texture parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+      int wrap = convertStrToWrap(wrapMode);
+      int filter = convertStrToFilter(filterDetail);
+      int texenv = convertStrToTexEnv(env);
 
-            switch (filter) {
-                case FILTER_LOW: {
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                        GL_NEAREST);
+      // Texture parameters
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_NEAREST);
+      switch (filter) {
+        case FILTER_LOW: {
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+          glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
 
-                    glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgData.getWidth(),
+            imgData.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData.getImage());
+        } break;
 
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgData.getWidth(),
-                        imgData.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                        imgData.getImage());
+        case FILTER_MED: {
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+          glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
 
-                    break;
-                }
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgData.getWidth(),
+            imgData.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData.getImage());
+        } break;
 
-                case FILTER_MED: {
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                        GL_LINEAR);
+        case FILTER_HI: {
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+          glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
 
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR);
+          gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imgData.getWidth(),
+            imgData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imgData.getImage());
+        } break;
 
-                    glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
+        case FILTER_BEST: {
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+          glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
 
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgData.getWidth(),
-                        imgData.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                        imgData.getImage());
+          gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imgData.getWidth(),
+            imgData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imgData.getImage());
+        } break;
+      }
 
-                    break;
-                }
+      imgData.release();
 
-                case FILTER_HI: {
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-                        GL_LINEAR);
-
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR_MIPMAP_NEAREST);
-
-                    glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
-
-                    gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imgData.getWidth(),
-                        imgData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE,
-                        imgData.getImage());
-
-                    break;
-                }
-
-                case FILTER_BEST: {
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                        GL_LINEAR);
-
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR_MIPMAP_LINEAR);
-
-                    glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, texenv);
-
-                    gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imgData.getWidth(),
-                        imgData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE,
-                        imgData.getImage());
-
-                    break;
-                }
-            }
-
-            imgData.release();
-
-            numberTextures++;
-        }
+      numberTextures++;
     }
+  }
 
-    return true;
+  return true;
 }
 
 bool TextureMgr::releaseTextures()
 {
-    for (int idx = 0; idx < numberTextures; idx++) {
-        if (textureObjects[idx].inUse) {
-            glDeleteTextures(1, &(textureObjects[idx].textureObjectID));
-            textureObjects[idx].inUse = false;
-        }
+  for (int idx = 0; idx < numberTextures; idx++) {
+    if (textureObjects[idx].inUse) {
+      glDeleteTextures(1, &(textureObjects[idx].textureObjectID));
+      textureObjects[idx].inUse = false;
     }
+  }
 
+  return true;
+}
+
+unsigned int TextureMgr::getTextureID(char *textureName)
+{
+  for (int idx = 0; idx < numberTextures; idx++) {
+    if (!strcmp(textureName,textureObjects[idx].textureName))
+      return idx;
+  }
+
+  return -1;
+}
+
+bool TextureMgr::bindTex(unsigned int textureID)
+{
+  if (textureObjects[textureID].inUse) {
+    glBindTexture(GL_TEXTURE_2D, textureObjects[textureID].textureObjectID);
     return true;
-}
+  }
 
-unsigned int TextureMgr::getTextureID(char* textureName)
-{
-    for (int idx = 0; idx < numberTextures; idx++) {
-        if (!strcmp(textureName, textureObjects[idx].textureName))
-            return idx;
-    }
-    
-    return -1;
-}
-
-bool TextureMgr::bind(unsigned int textureID)
-{
-    if (textureObjects[textureID].inUse) {
-        glBindTexture(GL_TEXTURE_2D, textureObjects[textureID].textureObjectID);
-        return true;
-    }
-
-    return false;
+  return false;
 }

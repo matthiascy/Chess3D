@@ -18,7 +18,7 @@ public:
  * returns true. Otherwise, the function returns false, and the timer should
  * not be used.
  */
-bool init();
+bool initialize();
 
 float getElapsedSeconds(unsigned long elapsedFrames = 1);
 
