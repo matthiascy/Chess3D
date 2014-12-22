@@ -11,6 +11,7 @@
 #include "chess_opengl.h"
 #include "chess_game.h"
 #include "chess_timer.h"
+
 bool exiting = false;
 long windowWidth = 1024;
 long windowHeight = 768;

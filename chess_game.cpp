@@ -13,18 +13,12 @@ ChessGame::~ChessGame()
 
 void ChessGame::setupWhitePieces()
 {
-  whitePawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl_white.tga",
-    "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
-  whiteRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino_white.tga", NULL,
-    NULL, 0.015f);
-  whiteKnight.load("res\\pknight\\tris.md2", "res\\pknight\\knight_white.tga",
-    "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
-  whiteBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom_white.tga",
-    "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
-  whiteQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin_white.tga",
-    "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
-  whiteKing.load("res\\orc\\tris.md2", "res\\orc\\burningblade.tga",
-    "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
+  whitePawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl_white.tga", "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
+  whiteRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino_white.tga", NULL, NULL, 0.015f);
+  whiteKnight.load("res\\pknight\\tris.md2", "res\\pknight\\knight_white.tga", "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
+  whiteBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom_white.tga", "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
+  whiteQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin_white.tga", "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
+  whiteKing.load("res\\orc\\tris.md2", "res\\orc\\burningblade.tga", "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
 
   // setup white pawns
   for (int idx = 0; idx < 8; idx++) {
@@ -82,18 +76,12 @@ void ChessGame::setupWhitePieces()
 
 void ChessGame::setupBlackPieces()
 {
-  blackPawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl.tga",
-    "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
-  blackRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino.tga", NULL, NULL,
-    0.015f);
-  blackKnight.load("res\\pknight\\tris.md2", "res\\pknight\\evil.tga",
-    "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
-  blackBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom.tga",
-    "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
-  blackQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin.tga",
-    "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
-  blackKing.load("res\\orc\\tris.md2", "res\\orc\\blackrock.tga",
-    "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
+  blackPawn.load("res\\hueteotl\\tris.md2", "res\\hueteotl\\hueteotl.tga", "res\\hueteotl\\weapon.md2", "res\\hueteotl\\weapon.tga", 0.02f);
+  blackRook.load("res\\rhino\\tris.md2", "res\\rhino\\rhino.tga", NULL, NULL, 0.015f);
+  blackKnight.load("res\\pknight\\tris.md2", "res\\pknight\\evil.tga", "res\\pknight\\weapon.md2", "res\\pknight\\weapon.tga", 0.025f);
+  blackBishop.load("res\\phantom\\tris.md2", "res\\phantom\\phantom.tga", "res\\phantom\\weapon.md2", "res\\phantom\\weapon.tga", 0.03f);
+  blackQueen.load("res\\goblin\\tris.md2", "res\\goblin\\goblin.tga", "res\\goblin\\weapon.md2", "res\\goblin\\weapon.tga", 0.03f);
+  blackKing.load("res\\orc\\tris.md2", "res\\orc\\blackrock.tga", "res\\orc\\weapon.md2", "res\\orc\\weapon.tga", 0.03f);
 
   // setup black pawns
   for (int idx = 16; idx < 24; idx++)
