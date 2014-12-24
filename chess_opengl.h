@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_opengl.h
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #ifndef __CHESS_OPENGL_H__
 #define __CHESS_OPENGL_H__
 

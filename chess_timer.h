@@ -1,4 +1,12 @@
 /*
+ * @file:        chess_timer.h
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: Wrapper for the high-resolution timer. Can't be used if the
+ *               hi-res timer doesn't exist. The original file is written by
+ *               Dave Astle, 2/1/2001.
+ */
+/*
  * Wrapper for the high-resolution timer. Can't be used if the hi-res timer
  * doesn't exist
  */

@@ -1,5 +1,11 @@
-#include "chess_plane.h"
+/*
+ * @file:        chess_plane.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
 
+#include "chess_plane.h"
 
 Plane::Plane(float a /*= 1*/, float b /*= 0*/, float c /*= 0*/,
              float d /*= 0*/)

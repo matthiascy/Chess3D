@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_tga_image.h
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #ifndef __CHESS_TGA_IMAGE_H__
 #define __CHESS_TGA_IMAGE_H__
 

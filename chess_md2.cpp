@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_md2.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #include "chess_md2.h"
 #include <cstdio>
 #include <cmath>

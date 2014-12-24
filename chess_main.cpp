@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_main.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description:
+ */
+
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
 

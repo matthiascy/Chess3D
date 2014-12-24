@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_opengl.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #ifdef _WINDOWS
 #include <Windows.h>
 #endif

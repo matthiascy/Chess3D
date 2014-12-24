@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_game.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #include "chess_piece.h"
 #include "chess_board.h"
 #include "chess_game.h"

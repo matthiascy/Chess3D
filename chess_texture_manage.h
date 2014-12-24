@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_texture_manage.h
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #ifndef __CHESS_TEXTURE_MANAGE_H__
 #define __CHESS_TEXTURE_MANAGE_H__
 

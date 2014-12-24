@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_vector.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #include "chess_vector.h"
 
 float & Vector::operator[](const long idx)
@@ -100,19 +107,9 @@ const Vector Vector::operator/(float s) const
     return Vector(s*x, s*y, s*z);
 }
 
-const Vector Vector::cross(const Vector& vec) const
-{
-    return Vector(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
-}
-
 const Vector Vector::operator^(const Vector& vec) const
 {
     return Vector(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
-}
-
-const float Vector::dot(const Vector& vec) const
-{
-    return x*vec.x + y*vec.x + z*vec.z;
 }
 
 const float Vector::operator%(const Vector& vec) const

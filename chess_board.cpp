@@ -1,5 +1,10 @@
+/*
+ * @file:        chess_board.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
 #include "chess_board.h"
-
 
 void ChessBoard::initialize()
 {

@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_vector.h
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #ifndef __CHESS_VECTOR_H__
 #define __CHESS_VECTOR_H__
 
@@ -74,13 +81,7 @@ public :
   const Vector operator /(float s) const;
 
   // cross product
-  const Vector cross(const Vector& vec) const;
-
-  // cross product
   const Vector operator ^(const Vector& vec) const;
-
-  // dot product
-  const float dot(const Vector& vec) const;
 
   // dot product
   const float operator %(const Vector& vec) const;

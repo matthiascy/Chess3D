@@ -1,3 +1,10 @@
+/*
+ * @file:        chess_tga_image.cpp
+ * @author:      matthiascy(matthias_cy@outlook.com)
+ * @date:        2014-12-20
+ * @description: 
+ */
+
 #include <iostream>
 #include "chess_tga_image.h"
 
