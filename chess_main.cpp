@@ -163,18 +163,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   windowRect.bottom = (long)windowHeight;  // Set Bottom Value To Requested Height
 
   // fill out the window class structure
-  windowClass.cbSize			= sizeof(WNDCLASSEX);
+  windowClass.cbSize		= sizeof(WNDCLASSEX);
   windowClass.style			= CS_HREDRAW | CS_VREDRAW;
-  windowClass.lpfnWndProc		= MainWindowProc;
-  windowClass.cbClsExtra		= 0;
-  windowClass.cbWndExtra		= 0;
+  windowClass.lpfnWndProc	= MainWindowProc;
+  windowClass.cbClsExtra	= 0;
+  windowClass.cbWndExtra	= 0;
   windowClass.hInstance		= hInstance;
   windowClass.hIcon			= LoadIcon(NULL, IDI_APPLICATION);	// default icon
-  windowClass.hCursor			= LoadCursor(NULL, IDC_ARROW);	// default arrow
+  windowClass.hCursor		= LoadCursor(NULL, IDC_ARROW);	// default arrow
   windowClass.hbrBackground	= NULL;								// don't need background
   windowClass.lpszMenuName	= NULL;								// no menu
   windowClass.lpszClassName	= "GLClass";
-  windowClass.hIconSm			= LoadIcon(NULL, IDI_WINLOGO);	// windows logo small icon
+  windowClass.hIconSm		= LoadIcon(NULL, IDI_WINLOGO);	// windows logo small icon
 
   // register the windows class
   if (!RegisterClassEx(&windowClass))
