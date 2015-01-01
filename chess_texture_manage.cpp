@@ -33,7 +33,7 @@ int TextureMgr::convertStrToFilter(char *str)
   else if (!strcmp(strupr(str), "MED"))
     return FILTER_MED;
   else if (!strcmp(strupr(str), "HI"))
-    return FILTER_HI;
+    return FILTER_HI; 
   else if (!strcmp(strupr(str), "BEST"))
     return FILTER_BEST;
   else

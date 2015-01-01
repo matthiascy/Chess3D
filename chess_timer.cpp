@@ -7,7 +7,7 @@
  */
 #include "chess_timer.h"
 
-/* 
+/*
  * if the hi-res timer is present, the tick rate is stored and the function
  * returns true. Otherwise, the function returns false, and the timer should
  * not be used.

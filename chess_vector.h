@@ -109,7 +109,7 @@ public :
 
   // reflect this vector off surface with normal vector
   const Vector inline reflect(const Vector& normal) const;
-
+    
   // rotate angle degrees about a normal
   const Vector inline rotate(const float angle, const Vector& normal) const;
 
