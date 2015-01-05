@@ -4,7 +4,6 @@
 
 #include <gl/gl.h>
 #include <gl/glu.h>
-#include <math.h>
 #include <cmath>
 #include <cstdio>
 
@@ -27,13 +26,12 @@
 // public
 ChessOGL::ChessOGL()
 {
-
 }
 
 ChessOGL::~ChessOGL()
 {
-
 }
+
 bool ChessOGL::initialize()
 {	
   if (!texMgr.loadTextures("Textures.dat"))
@@ -282,4 +280,5 @@ void ChessOGL::get3DIntersection(int winx, int winy, double &x, double &y, doubl
   x =  nx + (point * dir[0]);
   y =  ny + (point * dir[1]);
   z =  nz + (point * dir[2]);
+  
 }

@@ -11,6 +11,7 @@
 #include "chess_opengl.h"
 #include "chess_game.h"
 #include "chess_timer.h"
+
 bool exiting = false;
 long windowWidth = 1024;
 long windowHeight = 768;
@@ -27,7 +28,7 @@ void setupPixelFormat(HDC hDC)
 {
   int pixelFormat;
 
-  PIXELFORMATDESCRIPTOR pfd = {	
+  PIXELFORMATDESCRIPTOR pfd = {
     sizeof(PIXELFORMATDESCRIPTOR),	// size
     1,							// version
     PFD_SUPPORT_OPENGL |		// OpenGL window
@@ -59,87 +60,92 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   int height, width;
   int xPos, yPos;
   double x, y, z;
-  char str[40] = {'\0'};
-
+  char str[40] = { '\0' };
 
   // dispatch messages
-  switch (uMsg) {	
-      case WM_CREATE: {
-        hDC = GetDC(hWnd);
-        setupPixelFormat(hDC);
-        //SetupPalette();
-        hRC = wglCreateContext(hDC);
-        wglMakeCurrent(hDC, hRC);
-      } break;
+  switch (uMsg) {
+    case WM_CREATE: {
+      hDC = GetDC(hWnd);
+      setupPixelFormat(hDC);
+      //SetupPalette();
+      hRC = wglCreateContext(hDC);
+      wglMakeCurrent(hDC, hRC);
+      break;
+    }
 
-      case WM_DESTROY:
-      case WM_QUIT:
-      case WM_CLOSE: {
+    case WM_DESTROY:
+    case WM_QUIT:
+    case WM_CLOSE: {
 
-        // deselect rendering context and delete it
-        wglMakeCurrent(hDC, NULL);
-        wglDeleteContext(hRC);
+      // deselect rendering context and delete it
+      wglMakeCurrent(hDC, NULL);
+      wglDeleteContext(hRC);
 
-        // send WM_QUIT to message queue
-        PostQuitMessage(0);
-      } break;
+      // send WM_QUIT to message queue
+      PostQuitMessage(0);
+      break;
+    }
 
-      case WM_SIZE: {
-        height = HIWORD(lParam);
-        width = LOWORD(lParam);
+    case WM_SIZE: {
+      height = HIWORD(lParam);
+      width = LOWORD(lParam);
 
-        kRender->setupProjection(width, height);
-      } break;
+      kRender->setupProjection(width, height);
+      break;
+    }
 
-      case WM_ACTIVATEAPP:
-        break;
+    case WM_ACTIVATEAPP:
+      break;
 
-      case WM_PAINT: {
-        PAINTSTRUCT ps;
-        BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
-      } break;
+    case WM_PAINT: {
+      PAINTSTRUCT ps;
+      BeginPaint(hWnd, &ps);
+      EndPaint(hWnd, &ps);
+      break;
+    }
 
-      case WM_LBUTTONDOWN: {
-        xPos = LOWORD(lParam); 
-        yPos = HIWORD(lParam);
-        kRender->get3DIntersection(xPos, yPos, x, y, z);
-        kGame->onSelection((float)z, (float)x);
-      } break;
+    case WM_LBUTTONDOWN: {
+      xPos = LOWORD(lParam);
+      yPos = HIWORD(lParam);
+      kRender->get3DIntersection(xPos, yPos, x, y, z);
+      kGame->onSelection((float)z, (float)x);
+      break; 
+    }
 
-      case WM_RBUTTONDOWN:
-        break;
+    case WM_RBUTTONDOWN:
+      break;
 
-      case WM_MOUSEMOVE:
-        break;
+    case WM_MOUSEMOVE:
+      break;
 
-      case WM_LBUTTONUP:
-        break;
+    case WM_LBUTTONUP:
+      break;
 
-      case WM_RBUTTONUP:
-        break;
+    case WM_RBUTTONUP:
+      break;
 
-      case WM_KEYUP:
-        break;
+    case WM_KEYUP:
+      break;
 
-      case WM_KEYDOWN: {
-        int fwKeys;
-        LPARAM keyData;
-        fwKeys = (int)wParam;    // virtual-key code 
-        keyData = lParam;        // key data 
+    case WM_KEYDOWN: {
+      int fwKeys;
+      LPARAM keyData;
+      fwKeys = (int)wParam;    // virtual-key code 
+      keyData = lParam;        // key data 
 
-        switch(fwKeys) {
-          case VK_ESCAPE:
-            PostQuitMessage(0);
-            break;
+      switch (fwKeys) {
+        case VK_ESCAPE:
+          PostQuitMessage(0);
+          break;
 
-          default:
-            break;
-        }
-      } break;
+        default:
+          break;
+      }
+      break; 
+    }
 
-      default:
-        break;
+    default:
+      break;
   }
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
@@ -163,18 +169,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   windowRect.bottom = (long)windowHeight;  // Set Bottom Value To Requested Height
 
   // fill out the window class structure
-  windowClass.cbSize		= sizeof(WNDCLASSEX);
-  windowClass.style			= CS_HREDRAW | CS_VREDRAW;
-  windowClass.lpfnWndProc	= MainWindowProc;
-  windowClass.cbClsExtra	= 0;
-  windowClass.cbWndExtra	= 0;
-  windowClass.hInstance		= hInstance;
-  windowClass.hIcon			= LoadIcon(NULL, IDI_APPLICATION);	// default icon
-  windowClass.hCursor		= LoadCursor(NULL, IDC_ARROW);	// default arrow
-  windowClass.hbrBackground	= NULL;								// don't need background
-  windowClass.lpszMenuName	= NULL;								// no menu
-  windowClass.lpszClassName	= "GLClass";
-  windowClass.hIconSm		= LoadIcon(NULL, IDI_WINLOGO);	// windows logo small icon
+  windowClass.cbSize = sizeof(WNDCLASSEX);
+  windowClass.style = CS_HREDRAW | CS_VREDRAW;
+  windowClass.lpfnWndProc = MainWindowProc;
+  windowClass.cbClsExtra = 0;
+  windowClass.cbWndExtra = 0;
+  windowClass.hInstance = hInstance;
+  windowClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);	// default icon
+  windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);	// default arrow
+  windowClass.hbrBackground = NULL;								// don't need background
+  windowClass.lpszMenuName = NULL;								// no menu
+  windowClass.lpszClassName = "GLClass";
+  windowClass.hIconSm = LoadIcon(NULL, IDI_WINLOGO);	// windows logo small icon
 
   // register the windows class
   if (!RegisterClassEx(&windowClass))
@@ -183,28 +189,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   if (fullscreen)								// fullscreen?
   {
     DEVMODE dmScreenSettings;					// device mode
-    memset(&dmScreenSettings,0,sizeof(dmScreenSettings));
-    dmScreenSettings.dmSize = sizeof(dmScreenSettings);	
+    memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+    dmScreenSettings.dmSize = sizeof(dmScreenSettings);
     dmScreenSettings.dmPelsWidth = windowWidth;			// screen width
     dmScreenSettings.dmPelsHeight = windowHeight;			// screen height
     dmScreenSettings.dmBitsPerPel = windowBits;				// bits per pixel
-    dmScreenSettings.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
+    dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-    // 
     if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
       // setting display mode failed, switch to windowed
       MessageBox(NULL, "Display mode failed", NULL, MB_OK);
-      fullscreen = FALSE;	
+      fullscreen = FALSE;
     }
   }
 
   if (fullscreen) {                 // Are We Still In fullscreen Mode?
-    dwExStyle=WS_EX_APPWINDOW;      // Window Extended Style
-    dwStyle=WS_POPUP;               // Windows Style
+    dwExStyle = WS_EX_APPWINDOW;      // Window Extended Style
+    dwStyle = WS_POPUP;               // Windows Style
     ShowCursor(FALSE);              // Hide Mouse Pointer
   } else {
-    dwExStyle=WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;	// Window Extended Style
-    dwStyle=WS_OVERLAPPEDWINDOW;					// Windows Style
+    dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;	// Window Extended Style
+    dwStyle = WS_OVERLAPPEDWINDOW;					// Windows Style
   }
 
   // Adjust Window To True Requested Size
@@ -212,17 +217,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
   // class registered, so now create our window
   hwnd = CreateWindowEx(NULL,			// extended style
-    "GLClass",							// class name
-    "Chess3D",                          // app name
-    dwStyle | WS_CLIPCHILDREN |
-    WS_CLIPSIBLINGS,
-    0, 0,								// x,y coordinate
-    windowRect.right - windowRect.left,
-    windowRect.bottom - windowRect.top, // width, height
-    NULL,								// handle to parent
-    NULL,								// handle to menu
-    hInstance,							// application instance
-    NULL);								// no extra params
+                        "GLClass",							// class name
+                        "Chess3D",                          // app name
+                        dwStyle | WS_CLIPCHILDREN |
+                        WS_CLIPSIBLINGS,
+                        0, 0,								// x,y coordinate
+                        windowRect.right - windowRect.left,
+                        windowRect.bottom - windowRect.top, // width, height
+                        NULL,								// handle to parent
+                        NULL,								// handle to menu
+                        hInstance,							// application instance
+                        NULL);								// no extra params
 
   hDC = GetDC(hwnd);
 
@@ -235,7 +240,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
   if (!kRender->initialize()) {
     MessageBox(NULL, "ChessOGL::initialize() error!",
-      "ChessOGL class failed to initialize!", MB_OK);
+               "ChessOGL class failed to initialize!", MB_OK);
     return -1;
   }
 
@@ -248,14 +253,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     kRender->render();
     SwapBuffers(hDC);
 
-    while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE)) {
-      if (!GetMessage (&msg, NULL, 0, 0)) {
+    while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
+      if (!GetMessage(&msg, NULL, 0, 0)) {
         exiting = true;
         break;
       }
 
-      TranslateMessage (&msg);
-      DispatchMessage (&msg);
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
     }
   }
 
@@ -264,7 +269,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   delete kRender;
 
   if (fullscreen) {
-    ChangeDisplaySettings(NULL,0);	// If So Switch Back To The Desktop
+    ChangeDisplaySettings(NULL, 0);	// If So Switch Back To The Desktop
     ShowCursor(TRUE);				// Show Mouse Pointer
   }
 
