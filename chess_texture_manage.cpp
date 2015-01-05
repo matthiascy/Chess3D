@@ -65,7 +65,7 @@ int TextureMgr::convertStrToTexEnv(char *str)
     return GL_REPLACE;
 }
 
-bool TextureMgr::loadTextures(char *textureDataFile)
+bool TextureMgr::loadTextures(char* textureDataFile)
 {
   // Texture data file format:
   // C++ style '//' at start of line is a comment
