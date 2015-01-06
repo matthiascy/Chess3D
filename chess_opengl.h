@@ -8,22 +8,6 @@ class ChessGame;
 class TextureMgr;
 
 class ChessOGL {
-public:
-  ChessOGL();
-  virtual ~ChessOGL();
-
-  bool initialize();
-  bool shutdown();
-
-  void attachToGame(ChessGame *game);
-
-  void setupProjection(int width, int height);
-
-  void prepare(float dt);
-  void render();
-
-  void get3DIntersection(int winx, int winy, double &x, double &y, double &z);
-
 private:
   int windowWidth;
   int windowHeight;
@@ -40,12 +24,31 @@ private:
   Vector blackViewPos;
   char   currentView;
 
+  bool isMenu;
+
   void generateChessBoardDL();
   void renderChessBoard();
   void renderSelections();
   void renderPieces();
   void renderTable();
+  void renderMenu();
   void drawSelectionBox(float x, float y, float z);
+
+public:
+  ChessOGL();
+  virtual ~ChessOGL();
+
+  bool initialize();
+  bool shutdown();
+
+  void attachToGame(ChessGame *game);
+
+  void setupProjection(int width, int height);
+
+  void prepare(float dt);
+  void render();
+
+  void get3DIntersection(int winx, int winy, double &x, double &y, double &z);
 };
 
 #endif // __CHESS_OPENGL_H__

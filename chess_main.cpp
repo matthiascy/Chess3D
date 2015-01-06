@@ -12,6 +12,8 @@
 #include "chess_game.h"
 #include "chess_timer.h"
 
+#include "resource.h"
+
 bool exiting = false;
 long windowWidth = 1024;
 long windowHeight = 768;
@@ -19,6 +21,9 @@ long windowBits = 24;
 bool fullscreen = false;
 int mouseX, mouseY;
 HDC hDC;
+HWND chessWnd;			   // window handle
+HMENU popupMenu;
+HINSTANCE globalInstance;
 
 ChessOGL *kRender = NULL;
 ChessHiResTimer *kHiResTimer = NULL;
@@ -53,6 +58,12 @@ void setupPixelFormat(HDC hDC)
   SetPixelFormat(hDC, pixelFormat, &pfd);
 }
 
+void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+void displayPopupMenu(long x, long y);
+
+LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   static HDC hDC;
@@ -86,6 +97,11 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
       break;
     }
 
+    case WM_COMMAND: {
+      WMCommand(chessWnd, uMsg, wParam, lParam);
+      break;
+    }
+
     case WM_SIZE: {
       height = HIWORD(lParam);
       width = LOWORD(lParam);
@@ -113,6 +129,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     }
 
     case WM_RBUTTONDOWN:
+      displayPopupMenu(LOWORD(lParam), HIWORD(lParam));
       break;
 
     case WM_MOUSEMOVE:
@@ -153,7 +170,6 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
   WNDCLASSEX windowClass;  // window class
-  HWND hwnd;			   // window handle
   MSG msg;				   // message
   DWORD dwExStyle;		   // Window Extended Style
   DWORD	dwStyle;		   // Window Style
@@ -216,7 +232,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle);
 
   // class registered, so now create our window
-  hwnd = CreateWindowEx(NULL,			// extended style
+  chessWnd = CreateWindowEx(NULL,			// extended style
                         "GLClass",							// class name
                         "Chess3D",                          // app name
                         dwStyle | WS_CLIPCHILDREN |
@@ -229,14 +245,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         hInstance,							// application instance
                         NULL);								// no extra params
 
-  hDC = GetDC(hwnd);
+  popupMenu = LoadMenu(hInstance, MAKEINTRESOURCE(IDR_POPUP_MENU));
+
+  hDC = GetDC(chessWnd);
 
   // check if window creation failed (hwnd would equal NULL)
-  if (!hwnd)
+  if (!chessWnd)
     return 0;
 
-  ShowWindow(hwnd, SW_SHOW);			// display the window
-  UpdateWindow(hwnd);					// update the window
+  ShowWindow(chessWnd, SW_SHOW);			// display the window
+  UpdateWindow(chessWnd);					// update the window
 
   if (!kRender->initialize()) {
     MessageBox(NULL, "ChessOGL::initialize() error!",
@@ -274,4 +292,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   }
 
   return (int)msg.wParam;
+}
+
+void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+  if (wParam == ID_POPUP_LOGIN) {
+    DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
+  }
+}
+
+void displayPopupMenu(long x, long y)
+{
+  HMENU temp = GetSubMenu(popupMenu, 0);
+  TrackPopupMenu(temp, TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, 0, chessWnd, NULL);
+}
+
+LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG: {
+      break;
+    }
+
+    case WM_COMMAND: {
+      if (wParam == IDC_BUTTON_CONFIRM) {
+        MessageBox(chessWnd, "hello", "hello", MB_OK);
+      }
+    }
+  }
+  return 0;
 }

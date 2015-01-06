@@ -49,6 +49,8 @@ bool ChessOGL::initialize()
   blackViewPos = Vector(9.0, 8.0, 4.0);
   currentView = WHITE;
 
+  isMenu = true;
+
   return true;
 }
 
@@ -75,11 +77,16 @@ void ChessOGL::setupProjection(int width, int height)
   glMatrixMode(GL_PROJECTION);			// set projection matrix current matrix
   glLoadIdentity();						// reset projection matrix
 
-  // calculate perspective
-  gluPerspective(54.0f,(GLfloat)width/(GLfloat)height,1.0f,1000.0f);
+  if (!isMenu) {
+    glOrtho(-20.0, 20.0, 0.0, 10.0, 1.0, 1000.0);
+    //glFrustum(-10.0, 20.0, 0.0, 10.0, 1.0, 1000.0);
+  } else {
+    // calculate perspective
+    gluPerspective(54.0f, (GLfloat)width / (GLfloat)height, 1.0f, 1000.0f);
 
-  glMatrixMode(GL_MODELVIEW);				// set modelview matrix
-  glLoadIdentity();						// reset modelview matrix
+    glMatrixMode(GL_MODELVIEW);				// set modelview matrix
+    glLoadIdentity();						// reset modelview matrix
+  }
 
   windowWidth = width;
   windowHeight = height;
@@ -100,12 +107,19 @@ void ChessOGL::render()
 
   glLoadIdentity();
 
-  if (currentView == WHITE)
-    gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
-      0.0, 1.0, 0.0);
-  else
-    gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
-      0.0, 1.0, 0.0);
+  if (isMenu) {
+    gluLookAt(-1.0, 8.0, 4.0,
+              4.0, 0.0, 4.0,
+              0.0, 1.0, 0.0);
+    //renderMenu();
+  } else {
+    if (currentView == WHITE)
+      gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
+                0.0, 1.0, 0.0);
+    else
+      gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
+                0.0, 1.0, 0.0);
+  }
 
   // render the wood table
   glDisable(GL_DEPTH_TEST);
@@ -279,6 +293,15 @@ void ChessOGL::get3DIntersection(int winx, int winy, double &x, double &y, doubl
   // get (x, y, z) intersection on (x, z) plane
   x =  nx + (point * dir[0]);
   y =  ny + (point * dir[1]);
-  z =  nz + (point * dir[2]);
-  
+  z =  nz + (point * dir[2]); 
+}
+
+void ChessOGL::renderMenu()
+{
+  glBegin(GL_QUADS);
+  glVertex3f(1.0f, 0.0f, -20.0f);
+  glVertex3f(1.0f, 0.0f, 20.0f);
+  glVertex3f(1.0f, 20.0f, 20.0f);
+  glVertex3f(1.0f, 20.0f, -20.0f);
+  glEnd();
 }

@@ -112,6 +112,10 @@
     <ClInclude Include="chess_timer.h" />
     <ClInclude Include="chess_vector.h" />
     <ClInclude Include="glext.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Chess3D.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
