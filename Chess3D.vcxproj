@@ -90,6 +90,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="chess_board.cpp" />
+    <ClCompile Include="chess_client.cpp" />
     <ClCompile Include="chess_game.cpp" />
     <ClCompile Include="chess_main.cpp" />
     <ClCompile Include="chess_md2.cpp" />
@@ -102,8 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chess_board.h" />
+    <ClInclude Include="chess_client.h" />
     <ClInclude Include="chess_game.h" />
     <ClInclude Include="chess_md2.h" />
+    <ClInclude Include="chess_network.h" />
     <ClInclude Include="chess_opengl.h" />
     <ClInclude Include="chess_piece.h" />
     <ClInclude Include="chess_plane.h" />

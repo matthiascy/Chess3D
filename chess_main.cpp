@@ -11,6 +11,7 @@
 #include "chess_opengl.h"
 #include "chess_game.h"
 #include "chess_timer.h"
+#include "chess_client.h"
 
 #include "resource.h"
 
@@ -20,11 +21,15 @@ long windowHeight = 768;
 long windowBits = 24;
 bool fullscreen = false;
 int mouseX, mouseY;
+char name[STR_LEN];
+char password[STR_LEN];
+
 HDC hDC;
 HWND chessWnd;			   // window handle
 HMENU popupMenu;
 HINSTANCE globalInstance;
 
+ChessClient* kClient = NULL;
 ChessOGL *kRender = NULL;
 ChessHiResTimer *kHiResTimer = NULL;
 ChessGame *kGame = NULL;
@@ -175,9 +180,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   DWORD	dwStyle;		   // Window Style
   RECT windowRect;
 
+  globalInstance = hInstance;
+
   kRender = new ChessOGL;
   kHiResTimer = new ChessHiResTimer;
   kGame = new ChessGame;
+  kClient = new ChessClient;
 
   windowRect.left = (long)0;			   // Set Left Value To 0
   windowRect.right = (long)windowWidth;	   // Set Right Value To Requested Width
@@ -264,6 +272,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
   kHiResTimer->initialize();
   kGame->initialize();
+  kClient->initialize();
   kRender->attachToGame(kGame);
 
   while (!exiting) {
@@ -285,6 +294,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   delete kGame;
   delete kHiResTimer;
   delete kRender;
+  delete kClient;
 
   if (fullscreen) {
     ChangeDisplaySettings(NULL, 0);	// If So Switch Back To The Desktop
@@ -298,6 +308,9 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   if (wParam == ID_POPUP_LOGIN) {
     DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
+    //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
+  } else if (wParam == ID_POPUP_EXIT) {
+    SendMessage(chessWnd, WM_DESTROY, wParam, lParam);
   }
 }
 
@@ -315,9 +328,19 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     case WM_COMMAND: {
-      if (wParam == IDC_BUTTON_CONFIRM) {
-        MessageBox(chessWnd, "hello", "hello", MB_OK);
+      switch (LOWORD(wParam)) {
+        case IDC_BUTTON_CONFIRM: {
+          GetDlgItemText(hWnd, IDC_NAME, name, STR_LEN);
+          GetDlgItemText(hWnd, IDC_PWD, password, STR_LEN);
+          kClient->setName(name);
+          kClient->setPwd(password);
+          kClient->connectToServer("127.0.0.1", 1200);
+          //kClient->sendMessage(PKTMSG, "HELLO");
+          //kClient->sendMessage(PKTMSG, "HELLO");
+          break;
+        }
       }
+      break;
     }
   }
   return 0;

@@ -45,6 +45,9 @@
     <ClCompile Include="chess_vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="chess_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chess_board.h">
@@ -81,6 +84,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
