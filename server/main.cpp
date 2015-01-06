@@ -10,7 +10,7 @@ processLife = 1;
 
 void processLoop();
 
-#if defined (WIN32)
+#if defined WIN32
 
 HINSTANCE   kInst;    // current instance
 HWND        kWnd;     // window handle
