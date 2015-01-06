@@ -25,13 +25,14 @@ public:
     strcpy_s(this->pwd, pwd);
   }
 
-  Position getPosition() {
-    return chessPos;
+  Position_Test getPosition() {
+    return testPos;
   }
 
   void initialize();
   bool connectToServer(const char* ip, short int port);
   void sendMessage(PACKETTYPE type, char* msg);
+  void sendMessage(PACKETTYPE type, float x, float y);
   void recvMessage();
   void processPacket();
 
@@ -43,7 +44,7 @@ private:
   char name[STR_LEN];
   char pwd[STR_LEN];
   Position chessPos;
-  Pos clientPos;
+  Position_Test testPos;
 };
 
 #endif // __CHESS_CLIENT_H__

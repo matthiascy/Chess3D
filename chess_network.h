@@ -19,9 +19,9 @@ typedef struct Postion {
   float desRow;
 } Position;
 
-typedef struct Pos {
+typedef struct Position_Test {
   float x, y;
-} Pos;
+} Position_Test;
 
 typedef struct PacketHeader {
   PACKETTYPE packetType;
@@ -38,5 +38,11 @@ typedef struct PacketGame {
   char name[STR_LEN];
   Postion pos;
 } PacketGame;
+
+typedef struct PacketGame_Test {
+  PacketHeader header;
+  char name[STR_LEN];
+  Position_Test pos;
+};
 
 #endif // __CHESS_NETWORK_H__

@@ -134,6 +134,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
       xPos = LOWORD(lParam);
       yPos = HIWORD(lParam);
       kRender->get3DIntersection(xPos, yPos, x, y, z);
+      //kClient->sendMessage(PKTGAME_TEST, z, x);
       kGame->onSelection((float)z, (float)x);
       break; 
     }
@@ -178,6 +179,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case FD_READ: {
           kClient->recvMessage();
           kClient->processPacket();
+          kGame->onSelection(kClient->getPosition().x, kClient->getPosition().y);
           break;
         }
 

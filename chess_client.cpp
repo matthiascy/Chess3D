@@ -60,6 +60,26 @@ void ChessClient::sendMessage(PACKETTYPE type, char* msg)
       int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
       break;
     }
+
+    default:
+      break;
+  }
+}
+
+void ChessClient::sendMessage(PACKETTYPE type, float x, float y)
+{
+  switch (type) {
+    case PKTGAME_TEST: {
+      PacketGame_Test packet;
+      packet.header.packetType = PKTGAME_TEST;
+      strcpy_s(packet.name, name);
+      packet.pos.x = x;
+      packet.pos.y = y;
+      send(clientSock, (char*)&packet, sizeof(packet), 0);
+      break;
+    }
+    default:
+      break;
   }
 }
 
@@ -84,6 +104,13 @@ void ChessClient::processPacket()
     case PKTMSG: {
       PacketMessage* packet = (PacketMessage*)recvBuff;
       MessageBox(NULL, packet->message, "Message", MB_OK);
+      break;
+    }
+
+    case PKTGAME_TEST: {
+      PacketGame_Test* packet = (PacketGame_Test*)recvBuff;
+      this->testPos.x = packet->pos.x;
+      this->testPos.y = packet->pos.y;
       break;
     }
   }
