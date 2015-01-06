@@ -15,6 +15,8 @@
 
 #include "resource.h"
 
+#define WM_SOCKET WM_USER + 100
+
 bool exiting = false;
 long windowWidth = 1024;
 long windowHeight = 768;
@@ -67,6 +69,8 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 void displayPopupMenu(long x, long y);
 
+/*DWORD WINAPI recvThread(LPVOID lParam);*/
+
 LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -76,6 +80,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   int height, width;
   int xPos, yPos;
   double x, y, z;
+  //int x, y, z;
   char str[40] = { '\0' };
 
   // dispatch messages
@@ -133,9 +138,10 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
       break; 
     }
 
-    case WM_RBUTTONDOWN:
+    case WM_RBUTTONDOWN: {
       displayPopupMenu(LOWORD(lParam), HIWORD(lParam));
       break;
+    }
 
     case WM_MOUSEMOVE:
       break;
@@ -164,6 +170,23 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
           break;
       }
       break; 
+    }
+
+    case WM_SOCKET: {
+      kClient->setSocket(wParam);
+      switch (WSAGETSELECTEVENT(lParam)) {
+        case FD_READ: {
+          kClient->recvMessage();
+          kClient->processPacket();
+          break;
+        }
+
+        case FD_CLOSE: {
+          closesocket(kClient->getSocket());
+          break;
+        }
+      }
+      break;
     }
 
     default:
@@ -274,6 +297,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   kGame->initialize();
   kClient->initialize();
   kRender->attachToGame(kGame);
+  /*
+  DWORD threadId;
+  HANDLE recvHandle = CreateThread(NULL, 0, recvThread, (LPVOID)this,
+                                   0, &threadId);
+                                   */
 
   while (!exiting) {
     kRender->prepare(kHiResTimer->getElapsedSeconds(1));
@@ -309,7 +337,11 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   if (wParam == ID_POPUP_LOGIN) {
     DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
     //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
-  } else if (wParam == ID_POPUP_EXIT) {
+  } else if (wParam == ID_POPUP_MATCH) {
+    
+  } else if (wParam == ID_POPUP_LOGOUT) {
+
+  } else {
     SendMessage(chessWnd, WM_DESTROY, wParam, lParam);
   }
 }
@@ -317,7 +349,9 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 void displayPopupMenu(long x, long y)
 {
   HMENU temp = GetSubMenu(popupMenu, 0);
-  TrackPopupMenu(temp, TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, 0, chessWnd, NULL);
+  TrackPopupMenu(temp,
+                 TPM_LEFTALIGN | TPM_LEFTBUTTON
+                 , x, y, 0, chessWnd, NULL);
 }
 
 LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -337,6 +371,10 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           kClient->connectToServer("127.0.0.1", 1200);
           //kClient->sendMessage(PKTMSG, "HELLO");
           //kClient->sendMessage(PKTMSG, "HELLO");
+          break;
+        }
+        case IDC_BUTTON_CANCEL: {
+          EndDialog(hWnd, wParam);
           break;
         }
       }

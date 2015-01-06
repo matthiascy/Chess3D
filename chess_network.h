@@ -9,15 +9,19 @@
 #define STR_LEN         32
 
 enum PACKETTYPE {
-  PKTMSG, PKTGAME
+  PKTMSG, PKTGAME, PKTGAME_TEST
 };
 
 typedef struct Postion {
-  int oriCol;
-  int oriRow;
-  int desCol;
-  int desRow;
+  float oriCol;
+  float oriRow;
+  float desCol;
+  float desRow;
 } Position;
+
+typedef struct Pos {
+  float x, y;
+} Pos;
 
 typedef struct PacketHeader {
   PACKETTYPE packetType;

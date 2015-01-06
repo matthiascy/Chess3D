@@ -65,5 +65,26 @@ void ChessClient::sendMessage(PACKETTYPE type, char* msg)
 
 void ChessClient::recvMessage()
 {
+  recv(clientSock, recvBuff, MAX_BUFFER_SIZE, 0);
+}
 
+void ChessClient::processPacket()
+{
+  PacketHeader* header = (PacketHeader*)recvBuff;
+  switch (header->packetType) {
+    case PKTGAME: {
+      PacketGame* packet = (PacketGame*)recvBuff;
+      this->chessPos.oriCol = packet->pos.oriCol;
+      this->chessPos.oriRow = packet->pos.oriRow;
+      this->chessPos.desCol = packet->pos.desCol;
+      this->chessPos.desRow = packet->pos.desRow;
+      break;
+    }
+
+    case PKTMSG: {
+      PacketMessage* packet = (PacketMessage*)recvBuff;
+      MessageBox(NULL, packet->message, "Message", MB_OK);
+      break;
+    }
+  }
 }
