@@ -96,17 +96,26 @@ public:
   void render();
   void release();
 
-  ChessBoard *getBoard() { return chessBoard; }
+  ChessBoard *getBoard() {
+    return chessBoard;
+  }
+
   void onSelection(float row, float col);
 
-  bool getBoardHighlight(int row, int col) { 
+  bool getBoardHighlight(int row, int col) {
     return chessBoard->getHighlight(row, col); 
   }
 
   bool isValidMove(int pieceIdx, int newRow, int newCol);
 
-  void setCurrentState(char state) { gameState = state; }
-  char getCurrentState() { return gameState; }
+  void setCurrentState(char state) {
+    gameState = state; 
+  };
+
+  char getCurrentState() {
+    return gameState;
+  }
+
   char getCurrentMoveColor() { return currentMoveColor; }
 };
 
