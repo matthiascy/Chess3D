@@ -383,6 +383,8 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           kClient->setName(name);
           kClient->setPwd(password);
           if (kClient->connectToServer("127.0.0.1", SERVER_PORT))
+            WSAAsyncSelect(kClient->getSocket(), hWnd,
+                           WM_SOCKET, FD_READ);
             kClient->sendMessage(PKTMSG, MSGLOGIN, NO_COLOR, password);
             EndDialog(hWnd, wParam);
           break;

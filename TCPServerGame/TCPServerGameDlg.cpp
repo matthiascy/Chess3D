@@ -16,14 +16,16 @@
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 /////用户个数
-UserInfo   UserList[MAX_LISTEN];
-int   UserNum;
+UserInfo   userList[MAX_LISTEN];
+int   userNum;
 ////在线用户个数
 ClientInfo   OnClientList[MAX_LISTEN];
 int   OnClientNum;
 ///匹配用户
 MatchedUser   MatchList[MAX_LISTEN / 2];
 int  MatchNum;
+
+SOCKET conSock[MAX_LISTEN];
 
 class CAboutDlg: public CDialog {
 public:
@@ -107,6 +109,11 @@ BOOL CTCPServerGameDlg::OnInitDialog()
       pSysMenu->AppendMenu(MF_SEPARATOR);
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
+  }
+
+  for (int i = 0; i < MAX_LISTEN; i++) {
+    conSock[i] = INVALID_SOCKET;
+    memset(userList, 0, sizeof(userList));
   }
 
   // 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
@@ -200,7 +207,8 @@ void CTCPServerGameDlg::OnBnClickedButton1()  //开启服务器
   // TODO: 在此添加控件通知处理程序代码
   if (flag1 == true) {
     sockSvr = CreateServerSocket(NULL, SERVER_PORT);//端口号为5050  初始化 绑定 本地套接字 以及监听 过程
-    ::WSAAsyncSelect(sockSvr, this->m_hWnd, WM_SOCKET, FD_ACCEPT);	//使用多路复用模型进行TCP通信处理
+    ::WSAAsyncSelect(sockSvr, this->m_hWnd, WM_SOCKET,
+                     FD_ACCEPT | FD_READ);	//使用多路复用模型进行TCP通信处理
     CTime t = CTime::GetCurrentTime();
     CString time = t.Format("%H:%M:%S");
     //time +="服务器启动成功!\r\n";
@@ -246,12 +254,12 @@ bool CTCPServerGameDlg::LoadPwdDict(const char* pszFileName)    //加载文件自带用
   while (!feof(fp)) {
     UserInfo item;
     fscanf(fp, "%s%s", item.userName, item.userPwd);
-    UserList[UserNum++] = item;
+    userList[userNum++] = item;
   }
   return true;
 }
 
-bool CTCPServerGameDlg::AddPwdDict(const char* pszFileName, const char* pszName, const char* pszPwd)
+bool CTCPServerGameDlg::addUserDict(const char* pszFileName, const char* pszName, const char* pszPwd)
 {
   FILE* fp = fopen(pszFileName, "a");//只写方式，数据追加在文件末尾
   if (NULL == fp) {
@@ -262,25 +270,43 @@ bool CTCPServerGameDlg::AddPwdDict(const char* pszFileName, const char* pszName,
   return true;
 }
 
-bool CTCPServerGameDlg::IsValidUser(const char* pszName, const char* pszPwd)
+bool CTCPServerGameDlg::isValidUser(const char* pszName, const char* pszPwd)
 //////用户有效则返回true 否则返回false
 {
-  for (int i = 0; i < UserNum; i++) {
-    if (strcmp(UserList[i].userName, pszName) == 0 &&
-        strcmp(UserList[i].userPwd, pszPwd) == 0) {
-      return true;
+  for (int i = 0; i < userNum; i++) {
+    /*
+    if (strcmp(userList[i].userName, pszName) == 0 &&
+    strcmp(userList[i].userPwd, pszPwd) == 0) {
+    return true;
+    }
+    */
+    if (strcmp(userList[i].userName, pszName) == 0) {
+      if (strcmp(userList[i].userPwd, pszPwd) == 0) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
-  return false;
+  return true;
 }
 
-void CTCPServerGameDlg::AddUser(const char* pszName)
+void CTCPServerGameDlg::addUser(const char* pszName, const char* pwd)
 {
+  /*
   strcpy(OnClientList[OnClientNum].client.userName, pszName);
   ++OnClientNum;
+  */
+  for (int i = 0; i < MAX_LISTEN; i++) {
+    if (userList[i].userName != "0") {
+      strcpy_s(userList[i].userName, pszName);
+      strcpy_s(userList[i].userPwd, pwd);
+      userNum++;
+    }
+  }
 }
 
-void CTCPServerGameDlg::DeleteUser(const char* pszName)
+void CTCPServerGameDlg::deleteUser(const char* pszName)
 {
   for (int i = 0; i < OnClientNum; i++) {
     if (strcmp(OnClientList[OnClientNum].client.userName, pszName) == 0) {
@@ -288,6 +314,21 @@ void CTCPServerGameDlg::DeleteUser(const char* pszName)
       while (i < OnClientNum) {
         OnClientList[i] = OnClientList[i + 1];
         i++;
+      }
+    }
+  }
+}
+
+void CTCPServerGameDlg::addClient(const char* name, SOCKET s)
+{
+  for (int i = 0; i < MAX_LISTEN; i++) {
+    if (OnClientList[i].clientSock == INVALID_SOCKET) {
+      for (int j = 0; j < userNum; j++) {
+        if (strcmp(userList[j].userName, name) == 0) {
+          OnClientList[i].client = userList[i];
+          OnClientList[i].clientSock = s;
+          OnClientList[i].clientState = NT_NULL;
+        }
       }
     }
   }
@@ -301,67 +342,56 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
 
   if (PktHeader->packetType == PKTMSG) {
     switch (PktHeader->msgType) {
-      case MSGLOGIN:
-      {
+      case MSGLOGIN: {
         //如果PacketMessage结构体作为login包结构，则message存储的为用户密码
 
-        PacketMessage* PktMsgone = (PacketMessage*)recvBuff;
-        if (!IsValidUser(PktMsgone->name, PktMsgone->message)) {
-          AddPwdDict("User.txt", PktMsgone->name, PktMsgone->message);//缺少一个参数，文件名
-          AddUser(PktMsgone->name);
+        PacketMessage* packet = (PacketMessage*)recvBuff;
+        if (isValidUser(packet->name, packet->message)) {
+          addUserDict("User.txt", packet->name, packet->message);
+          addUser(packet->name, packet->message);
+          addClient(packet->name, s);
+          //send
 
 
           cnnNum = cnnNum + 1;
           char t[100];
           itoa(cnnNum, t, 10);
           strcat(t, "client(s) online");
-          strcat(PktMsgone->message, "LOGIN");
-          m_serverList.AddString((LPCTSTR)PktMsgone->message);
+          strcat(packet->message, "LOGIN");
+          m_serverList.AddString((LPCTSTR)packet->message);
           m_serverList.AddString((LPCTSTR)t);
-
-        } else {
-          AddUser(PktMsgone->name);
-
-          cnnNum = cnnNum + 1;
-          char t[100];
-          itoa(cnnNum, t, 10);
-          strcat(t, "client(s) online");
-          strcat(PktMsgone->message, "LOGIN");
-          m_serverList.AddString((LPCTSTR)PktMsgone->message);
-          m_serverList.AddString((LPCTSTR)t);
-
         }
-      }break;
-      case MSGLOGOUT:
-      {
-        PacketMessage* PktMsgtwo = (PacketMessage*)recvBuff;
-        DeleteUser(PktMsgtwo->name);
+        break;
+      }
+
+      case MSGLOGOUT: {
+        PacketMessage* packet = (PacketMessage*)recvBuff;
+        deleteUser(packet->name);
 
         cnnNum = cnnNum - 1;
         char t[100];
         itoa(cnnNum, t, 10);
         strcat(t, "client(s) online");
-        strcat(PktMsgtwo->message, "LOGOUT");
-        m_serverList.AddString((LPCTSTR)PktMsgtwo->message);
+        strcat(packet->message, "LOGOUT");
+        m_serverList.AddString((LPCTSTR)packet->message);
         m_serverList.AddString((LPCTSTR)t);
+        break;
+      }
 
-      }break;
+      case MSGCHAT: {
+        break;
+      }
 
-      case MSGCHAT:
-      {
+      case MSGMATCH: {
+        PacketMessage* packet = (PacketMessage*)recvBuff;
 
-      }break;
-      case MSGMATCH:
-      {
-        PacketMessage* PktMsgthree = (PacketMessage*)recvBuff;
-
-        if (PktMsgthree->state == NT_SEARCHGAME) { //如果包中含有搜寻匹配的状态
-          for (int i; i < OnClientNum; i++) {   //1
-            if (strcmp(OnClientList[i].client.userName, PktMsgthree->name) == 0) {//2
+        if (packet->state == NT_SEARCHGAME) { //如果包中含有搜寻匹配的状态
+          for (int i = 0; i < OnClientNum; i++) {   //1
+            if (strcmp(OnClientList[i].client.userName, packet->name) == 0) {//2
               OnClientList[i].clientState = NT_SEARCHGAME;
-              for (int j; j < OnClientNum; j++) {
-                if (OnClientList[j].clientState = PktMsgthree->state
-                    &&strcmp(OnClientList[j].client.userName, PktMsgthree->name) != 0) {
+              for (int j = 0; j < OnClientNum; j++) {
+                if (OnClientList[j].clientState = NT_SEARCHGAME &&
+                    strcmp(OnClientList[j].client.userName, packet->name) != 0) {
                   for (int k = 0; k < MAX_LISTEN / 2; k++) { //匹配数组
                     if (MatchList[k].connectedUser[0].client.userName == NULL
                         &&MatchList[k].connectedUser[1].client.userName == NULL) {
@@ -371,6 +401,7 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
                       MatchList[k].flag = false;
                     }
                   }/////////////////////////////////找到了都在搜索匹配状态的另一用户，并将两个用户预先存储在匹配数组中
+
                   PacketMessage  item;
                   item.header.packetType = PKTMSG;
                   item.header.msgType = MSGMATCH;
@@ -381,12 +412,11 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
                   PacketMessage  item;
                   item.header.packetType = PKTMSG;
                   item.header.msgType = MSGMATCH;
-                  item.state = NULL;
+                  item.state = NT_NULL;
                   ::send(s, (char*)&item, sizeof(PacketMessage), 0);
                 }
               }
-            }//2
-            else {        //没在在线用户表中找到自己的
+            } else {        //没在在线用户表中找到自己的
               PacketMessage  item;
               item.header.packetType = PKTMSG;
               item.header.msgType = MSGMATCH;
@@ -395,138 +425,174 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
             }
           }//1
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (PktMsgthree->state == NT_CONFIREMATCH)/////如果包中含有确认匹配的状态
-        {
-          for (int m; m < OnClientNum; m++)  //把在用户列表中的该连接用户状态置为确认连接状态
-          {
-            if (strcmp(OnClientList[m].client.userName, PktMsgthree->name) == 0) {
+
+        if (packet->state == NT_CONFIREMATCH) { /////如果包中含有确认匹配的状态
+          for (int m = 0; m < OnClientNum; m++) { //把在用户列表中的该连接用户状态置为确认连接状态
+            if (strcmp(OnClientList[m].client.userName, packet->name) == 0) {
               OnClientList[m].clientState = NT_CONFIREMATCH;
             }
           }
+        }
 
-
-          for (int k = 0; k < MAX_LISTEN / 2; k++) {//////////////////q
-            if (strcmp(MatchList[k].connectedUser[0].client.userName, PktMsgthree->name) == 0 ||
-                strcmp(MatchList[k].connectedUser[1].client.userName, PktMsgthree->name) == 0) {/////ast
-              if (strcmp(MatchList[k].connectedUser[0].client.userName, PktMsgthree->name) == 0 &&
-                  strcmp(MatchList[k].connectedUser[1].client.userName, PktMsgthree->name) != 0) {//u
-                for (int r; r < OnClientNum; r++) {//p
-                  if (strcmp(OnClientList[r].client.userName, MatchList[k].connectedUser[1].client.userName) == 0
-                      && OnClientList[r].clientState == MatchList[k].connectedUser[0].clientState) {//k
-                    MatchList[k].flag = true;
-                    // OnClientList[m].clientState = NT_CONFIREMATCH;
-                    for (int n = 0; n < OnClientNum; n++) {
-                      if (strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
-                          || strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[1].client.userName) == 0) {
-                        OnClientList[n].clientState = NT_INGAME;
-                      }
-                    }
-                    PacketMessage  item, itema;
-                    item.header.packetType = PKTMSG;
-                    itema.header.packetType = PKTMSG;
-
-                    item.header.msgType = MSGMATCH;
-                    itema.header.msgType = MSGMATCH;
-
-                    item.state = BLACK;
-                    itema.state = WHITE;
-                    ::send(MatchList[k].connectedUser[0].clientSock, (char*)&item, sizeof(PacketMessage), 0);
-                    ::send(MatchList[k].connectedUser[1].clientSock, (char*)&itema, sizeof(PacketMessage), 0);
-
-                  }//k
-                }//p
-              }//u
-              else {
-                PacketMessage  item;
-                item.header.packetType = PKTMSG;
-                item.header.msgType = MSGMATCH;
-                item.state = NT_NULL;
-                ::send(s, (char*)&item, sizeof(PacketMessage), 0);
-              }
-              if (strcmp(MatchList[k].connectedUser[1].client.userName, PktMsgthree->name) == 0
-                  && strcmp(MatchList[k].connectedUser[0].client.userName, PktMsgthree->name) != 0) {
-                for (int r; r < OnClientNum; r++) {//p
-                  if (strcmp(OnClientList[r].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
-                      && OnClientList[r].clientState == MatchList[k].connectedUser[1].clientState) {//k
-                    MatchList[k].flag = true;
-                    // OnClientList[m].clientState = NT_CONFIREMATCH;
-                    for (int n = 0; n < OnClientNum; n++) {
-                      if (strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
-                          || strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[1].client.userName) == 0) {
-                        OnClientList[n].clientState = NT_INGAME;
-                      }
-                    }
-
-                    PacketMessage  item, itema;
-                    item.header.packetType = PKTMSG;
-                    itema.header.packetType = PKTMSG;
-
-                    item.header.msgType = MSGMATCH;
-                    itema.header.msgType = MSGMATCH;
-
-                    item.state = BLACK;
-                    itema.state = WHITE;
-                    ::send(MatchList[k].connectedUser[0].clientSock, (char*)&item, sizeof(PacketMessage), 0);
-                    ::send(MatchList[k].connectedUser[1].clientSock, (char*)&itema, sizeof(PacketMessage), 0);
-                  }//k
-                }//p
-              } else {
-                PacketMessage  item;
-                item.header.packetType = PKTMSG;
-                item.header.msgType = MSGMATCH;
-                item.state = NT_NULL;
-                ::send(s, (char*)&item, sizeof(PacketMessage), 0);
-              }
-            } else {
-              PacketMessage  item;
-              item.header.packetType = PKTMSG;
-              item.header.msgType = MSGMATCH;
-              item.state = NT_NULL;
-              ::send(s, (char*)&item, sizeof(PacketMessage), 0);
-            }////////////////ast 
+        for (int i = 0; i < MAX_LISTEN / 2; i++) {
+          if (strcmp(MatchList[i].connectedUser[0].client.userName, packet->name) == 0 ||
+              strcmp(MatchList[i].connectedUser[1].client.userName, packet->name) == 0) {
+            if (MatchList[i].connectedUser[0].clientState == NT_CONFIREMATCH ||
+                MatchList[i].connectedUser[1].clientState == NT_CONFIREMATCH) {
+              MatchList[i].flag = true;
+              // send
+            }
           }
         }
+        /*
+                  for (int k = 0; k < MAX_LISTEN / 2; k++) {//////////////////q
+                  if (strcmp(MatchList[k].connectedUser[0].client.userName, packet->name) == 0 ||
+                  strcmp(MatchList[k].connectedUser[1].client.userName, packet->name) == 0) {/////ast
+                  if (strcmp(MatchList[k].connectedUser[0].client.userName, packet->name) == 0 &&
+                  strcmp(MatchList[k].connectedUser[1].client.userName, packet->name) != 0) {//u
+                  for (int r; r < OnClientNum; r++) {//p
+                  if (strcmp(OnClientList[r].client.userName, MatchList[k].connectedUser[1].client.userName) == 0
+                  && OnClientList[r].clientState == MatchList[k].connectedUser[0].clientState) {//k
+                  MatchList[k].flag = true;
+                  // OnClientList[m].clientState = NT_CONFIREMATCH;
+                  for (int n = 0; n < OnClientNum; n++) {
+                  if (strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
+                  || strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[1].client.userName) == 0) {
+                  OnClientList[n].clientState = NT_INGAME;
+                  }
+                  }
 
-      }break;
+                  PacketMessage  item, itema;
+                  item.header.packetType = PKTMSG;
+                  itema.header.packetType = PKTMSG;
 
-    }
-  }
-  if (PktHeader->packetType == PKTGAME) {
-    PacketGame* pktGame = (PacketGame*)recvBuff;
-    for (int i = 0; i < MatchNum; i++) {
-      while (MatchList[i].flag == true) {
-        if (strcmp(MatchList[i].connectedUser[0].client.userName, pktGame->name) == 0) {
-          ::send(MatchList[i].connectedUser[1].clientSock, recvBuff, sizeof(PacketGame), 0);
-        }
-        if (strcmp(MatchList[i].connectedUser[1].client.userName, pktGame->name) == 0) {
-          ::send(MatchList[i].connectedUser[0].clientSock, recvBuff, sizeof(PacketGame), 0);
+                  item.header.msgType = MSGMATCH;
+                  itema.header.msgType = MSGMATCH;
+
+                  item.state = BLACK;
+                  itema.state = WHITE;
+                  ::send(MatchList[k].connectedUser[0].clientSock, (char*)&item, sizeof(PacketMessage), 0);
+                  ::send(MatchList[k].connectedUser[1].clientSock, (char*)&itema, sizeof(PacketMessage), 0);
+
+                  }//k
+                  }//p
+                  } else {
+                  PacketMessage  item;
+                  item.header.packetType = PKTMSG;
+                  item.header.msgType = MSGMATCH;
+                  item.state = NT_NULL;
+                  ::send(s, (char*)&item, sizeof(PacketMessage), 0);
+                  }
+                  if (strcmp(MatchList[k].connectedUser[1].client.userName, packet->name) == 0
+                  && strcmp(MatchList[k].connectedUser[0].client.userName, packet->name) != 0) {
+                  for (int r; r < OnClientNum; r++) {//p
+                  if (strcmp(OnClientList[r].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
+                  && OnClientList[r].clientState == MatchList[k].connectedUser[1].clientState) {//k
+                  MatchList[k].flag = true;
+                  // OnClientList[m].clientState = NT_CONFIREMATCH;
+                  for (int n = 0; n < OnClientNum; n++) {
+                  if (strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[0].client.userName) == 0
+                  || strcmp(OnClientList[n].client.userName, MatchList[k].connectedUser[1].client.userName) == 0) {
+                  OnClientList[n].clientState = NT_INGAME;
+                  }
+                  }
+
+                  PacketMessage  item, itema;
+                  item.header.packetType = PKTMSG;
+                  itema.header.packetType = PKTMSG;
+
+                  item.header.msgType = MSGMATCH;
+                  itema.header.msgType = MSGMATCH;
+
+                  item.state = BLACK;
+                  itema.state = WHITE;
+                  ::send(MatchList[k].connectedUser[0].clientSock, (char*)&item, sizeof(PacketMessage), 0);
+                  ::send(MatchList[k].connectedUser[1].clientSock, (char*)&itema, sizeof(PacketMessage), 0);
+                  }//k
+                  }//p
+                  } else {
+                  PacketMessage  item;
+                  item.header.packetType = PKTMSG;
+                  item.header.msgType = MSGMATCH;
+                  item.state = NT_NULL;
+                  ::send(s, (char*)&item, sizeof(PacketMessage), 0);
+                  }
+                  } else {
+                  PacketMessage  item;
+                  item.header.packetType = PKTMSG;
+                  item.header.msgType = MSGMATCH;
+                  item.state = NT_NULL;
+                  ::send(s, (char*)&item, sizeof(PacketMessage), 0);
+                  }////////////////ast
+                  }
+                  }
+
+                  }break;
+
+                  }
+                  }
+                  */
+
+        if (PktHeader->packetType == PKTGAME) {
+          PacketGame* pktGame = (PacketGame*)recvBuff;
+          for (int i = 0; i < MatchNum; i++) {
+            //while (MatchList[i].flag == true) {
+            if (MatchList[i].flag == true) {
+              if (strcmp(MatchList[i].connectedUser[0].client.userName, pktGame->name) == 0) {
+                ::send(MatchList[i].connectedUser[1].clientSock, recvBuff, sizeof(PacketGame), 0);
+              } else {
+                ::send(MatchList[i].connectedUser[0].clientSock, recvBuff, sizeof(PacketGame), 0);
+              }
+            }
+          }
         }
       }
     }
   }
 }
 
+void CTCPServerGameDlg::sendPacket(const char* name, PACKETTYPE type, MSGTYPE msgType)
+{
+  switch (type) {
+
+  }
+}
 
 LRESULT CTCPServerGameDlg::OnSocket(WPARAM wParam, LPARAM lParam)//消息处理函数
 {
   char szBuffer[MAX_BUFFER_SIZE] = { 0 };
-  switch (lParam) {
+  switch (WSAGETSELECTEVENT(lParam)) {
     case FD_ACCEPT:
     {
       int fromLen = sizeof(fromAddr);
-      sockCnnn = ::accept(sockSvr, (sockaddr *)&fromAddr, &fromLen);
-      MessageBox(L"nihao！");
-      return true;
-    }break;
-    case FD_READ: {
       for (int i = 0; i < MAX_LISTEN; i++) {
-        if (OnClientList[i].clientSock = INVALID_SOCKET) {
-          ::recv(OnClientList[i].clientSock, szBuffer, 1024, 0);
-          messageProcessing(szBuffer, OnClientList[i].clientSock);
+        if (conSock[i] == INVALID_SOCKET) {
+          conSock[i] = ::accept(sockSvr, (sockaddr *)&fromAddr, &fromLen);
+          WSAAsyncSelect(conSock[i], this->m_hWnd, WM_SOCKET, FD_READ);
         }
       }
-    }break;
+      //sockCnnn = ::accept(sockSvr, (sockaddr *)&fromAddr, &fromLen);
+      //WSAAsyncSelect(sockCnnn, m_hWnd, WM_SOCKET, FD_READ);
+      MessageBox(L"nihao！");
+      return true;
+      break;
+    }
+
+    case FD_READ: {
+      for (int i = 0; i < MAX_LISTEN; i++) {
+        /*
+        if (OnClientList[i].clientSock = INVALID_SOCKET) {
+        ::recv(OnClientList[i].clientSock, szBuffer, 1024, 0);
+        messageProcessing(szBuffer, OnClientList[i].clientSock);
+        }
+        */
+        if (conSock[i] == wParam) {
+          ::recv(conSock[i], szBuffer, MAX_BUFFER_SIZE, 0);
+          messageProcessing(szBuffer, conSock[i]);
+        }
+      }
+      break;
+    }
   }
   return 0;
 }

@@ -43,15 +43,17 @@ public:
 	//装载用户数据字典
 	bool LoadPwdDict(const char* pszFileName);
 	//追加用户数据字典
-	bool AddPwdDict(const char* pszFileName,const char* pszName,const char* pszPwd);
+	bool addUserDict(const char* pszFileName,const char* pszName,const char* pszPwd);
 	//根据用户名和密码判断是否合法
-	bool IsValidUser(const char* pszName, const char* pszPwd);
+	bool isValidUser(const char* pszName, const char* pszPwd);
 	//在用户连接表中添加用户
-	void AddUser(const char* pszName);
+	void addUser(const char* pszName, const char* pwd);
 	//在用户连接表中删除用户
-	void DeleteUser(const char* pszName);
+	void deleteUser(const char* pszName);
 	//消息处理
 	void messageProcessing(const char* recvBuff,SOCKET s);
+    void addClient(const char* name, SOCKET S);
+    void sendPacket(const char* name, PACKETTYPE type, MSGTYPE msgType);
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 };

@@ -35,7 +35,7 @@ bool ChessClient::connectToServer(const char* ip, short int port)
   serverAddr.sin_addr.S_un.S_addr = inet_addr(ip);
   serverAddr.sin_port = htons(port);
   if (connect(clientSock, (sockaddr*)&serverAddr,
-    sizeof(serverAddr)) == 0) {
+    sizeof(serverAddr)) != 0) {
     closesocket(clientSock);
     return false;
   }
@@ -46,7 +46,7 @@ bool ChessClient::connectToServer(const char* ip, short int port)
 void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char color,
                               char* msg, float x/* = 0.0f*/, float y/* = 0.0f*/)
 {
-  if (isConnected) {
+  //if (isConnected) {
     switch (type) {
       case PKTMSG: {
         PacketMessage packet;
@@ -74,7 +74,7 @@ void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char color,
         break;
       }
     }
-  }
+  //}
 }
 
 void ChessClient::recvMessage()
