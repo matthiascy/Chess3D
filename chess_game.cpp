@@ -1,6 +1,7 @@
 #include "chess_piece.h"
 #include "chess_board.h"
 #include "chess_game.h"
+#include "chess_network.h"
 #include <iostream>
 
 ChessGame::ChessGame()
@@ -171,6 +172,7 @@ void ChessGame::initialize()
   currentMoveColor = WHITE;
   checkColor = NO_COLOR;
   gameState	= WAIT_STATE;
+  oppsiteState = NT_MOVING;
 }
 
 void ChessGame::update(float dt)

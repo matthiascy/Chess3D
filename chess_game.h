@@ -44,6 +44,7 @@ private:
   char	checkColor;		    // color of king in check, if any (NO_COLOR is possible)
 
   char	gameState;
+  char  oppsiteState;
 
   float	pieceMoveStartRow;	// starting position of a piece move
   float	pieceMoveStartCol;
@@ -115,6 +116,14 @@ public:
   char getCurrentState() {
     return gameState;
   }
+
+  char getOppState() {
+    return oppsiteState;
+  };
+
+  void setOppState(char state) {
+    oppsiteState = state;
+  };
 
   char getCurrentMoveColor() { return currentMoveColor; }
 };

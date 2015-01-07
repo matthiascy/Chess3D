@@ -16,6 +16,7 @@
 #include "chess_texture_manage.h"
 #include "chess_opengl.h"
 #include "chess_game.h"
+#include "chess_network.h"
 
 #pragma warning(disable:4244)
 #pragma warning(disable:4305)
@@ -151,11 +152,13 @@ void ChessOGL::render()
   // don't modify the contents of the stencil buffer
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-  // draw reflected chess pieces first
-  glPushMatrix();
-  glScalef(1.0, -1.0, 1.0);
-  renderPieces();
-  glPopMatrix();
+  //if (chessGame->getOppState() == NT_WAIT) {
+    // draw reflected chess pieces first
+    glPushMatrix();
+    glScalef(1.0, -1.0, 1.0);
+    renderPieces();
+    glPopMatrix();
+  //}
 
   // draw chessboard and selection square with blending
   glEnable(GL_BLEND);
@@ -168,11 +171,13 @@ void ChessOGL::render()
   // turn off stencil testing
   glDisable(GL_STENCIL_TEST);
 
-  // draw pieces normally
-  glPushMatrix();
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  renderPieces();
-  glPopMatrix();
+  //if (chessGame->getOppState() == NT_WAIT) {
+    // draw pieces normally
+    glPushMatrix();
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    renderPieces();
+    glPopMatrix();
+  //}
 }
 
 void ChessOGL::renderSelections()

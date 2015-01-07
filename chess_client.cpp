@@ -42,7 +42,7 @@ bool ChessClient::connectToServer(const char* ip, short int port)
 }
 
 void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
-                              char* msg, float x/* = 0*/, float y/* = 0*/)
+                              char* msg, float x/* = 0.0f*/, float y/* = 0.0f*/)
 {
   if (isConnected) {
     switch (type) {
@@ -62,6 +62,7 @@ void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
         PacketGame packet;
         memset(&packet, 0, sizeof(packet));
         packet.header.packetType = PKTGAME;
+        packet.header.msgType = msgType;
         packet.header.state = state;
         strcpy_s(packet.name, this->name);
         packet.pos.x = x;
@@ -85,12 +86,6 @@ void ChessClient::processPacket()
   switch (header->packetType) {
     case PKTGAME: {
       PacketGame* packet = (PacketGame*)recvBuff;
-      /*
-      this->chessPos.oriCol = packet->pos.oriCol;
-      this->chessPos.oriRow = packet->pos.oriRow;
-      this->chessPos.desCol = packet->pos.desCol;
-      this->chessPos.desRow = packet->pos.desRow;
-      */
       this->chessPos.x = packet->pos.x;
       this->chessPos.y = packet->pos.y;
       break;
@@ -101,14 +96,15 @@ void ChessClient::processPacket()
       switch (packet->header.msgType) {
         case MSGSTATE: {
           this->gameState = packet->header.state;
-          //MessageBox(NULL, packet->message, "Message", MB_OK);
           break;
         }
 
         case MSGLOGIN:
         case MSGLOGOUT:
-        case MSGCHAT:
+        case MSGCHAT: {
+          MessageBox(NULL, packet->message, "Info", MB_OK);
           break;
+        }
       }
       break;
     }

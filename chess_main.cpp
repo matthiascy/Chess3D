@@ -25,6 +25,7 @@ bool fullscreen = false;
 int mouseX, mouseY;
 char name[STR_LEN];
 char password[STR_LEN];
+char kState;
 
 HDC hDC;
 HWND chessWnd;			   // window handle
@@ -134,7 +135,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
       xPos = LOWORD(lParam);
       yPos = HIWORD(lParam);
       kRender->get3DIntersection(xPos, yPos, x, y, z);
-      //kClient->sendMessage(PKTGAME, z, x);
+      kClient->sendMessage(PKTGAME, MSGNULL, NT_WAIT, NULL, z, x);
       kGame->onSelection((float)z, (float)x);
       break; 
     }
@@ -179,7 +180,9 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case FD_READ: {
           kClient->recvMessage();
           kClient->processPacket();
-          kGame->onSelection(kClient->getPosition().x, kClient->getPosition().y);
+          kGame->onSelection(-kClient->getPosition().x, kClient->getPosition().y);
+          //kState = kClient->getState();
+          kGame->setOppState(kClient->getState());
           break;
         }
 
@@ -341,8 +344,6 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
   } else if (wParam == ID_POPUP_MATCH) {
     kClient->sendMessage(PKTMSG, MSGMATCH, NT_SEARCHGAME, NULL);
-    //packet.name = kClient
-
   } else if (wParam == ID_POPUP_LOGOUT) {
 
   } else {
