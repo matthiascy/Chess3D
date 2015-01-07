@@ -23,11 +23,19 @@ public:
 
   void setPwd(const char* pwd) {
     strcpy_s(this->pwd, pwd);
-  }
+  };
 
   Position_Test getPosition() {
     return testPos;
-  }
+  };
+
+  void setState(const char state) {
+    gameState = state;
+  };
+
+  char getState() {
+    return gameState;
+  };
 
   void initialize();
   bool connectToServer(const char* ip, short int port);
@@ -45,6 +53,8 @@ private:
   char pwd[STR_LEN];
   Position chessPos;
   Position_Test testPos;
+  bool isConnected;
+  char gameState;
 };
 
 #endif // __CHESS_CLIENT_H__

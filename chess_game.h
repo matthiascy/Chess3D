@@ -12,7 +12,7 @@ const char MOVING_STATE  = 0x02;	// moving a piece
 const char CAPTURE_STATE = 0x04;	// capturing a piece
 const char KILL_STATE    = 0x08;	// killing a piece
 const char SWITCH_STATE  = 0x10;	// switching player
-const char OPPSITE_WAIT  = 0x20;    // waiting for opposite user input
+//const char OPPSITE_WAIT  = 0x20;    // waiting for opposite user input
 
 class ChessGame {
 private:

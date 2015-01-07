@@ -17,6 +17,7 @@ void ChessClient::initialize()
   clientSock = INVALID_SOCKET;
   memset(&recvBuff, 0, sizeof(recvBuff));
   memset(&sendBuff, 0, sizeof(sendBuff));
+  isConnected = false;
 }
 
 bool ChessClient::connectToServer(const char* ip, short int port)
@@ -42,44 +43,48 @@ bool ChessClient::connectToServer(const char* ip, short int port)
 
 void ChessClient::sendMessage(PACKETTYPE type, char* msg)
 {
-  switch (type) {
-    case PKTGAME: {
-      PacketGame packet;
-      packet.header.packetType = PKTGAME;
-      strcpy_s(packet.name, name);
-      packet.pos = chessPos;
-      int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
-      break;
-    }
+  if (isConnected) {
+    switch (type) {
+      case PKTGAME: {
+        PacketGame packet;
+        packet.header.packetType = PKTGAME;
+        strcpy_s(packet.name, name);
+        packet.pos = chessPos;
+        int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
+        break;
+      }
 
-    case PKTMSG: {
-      PacketMessage packet;
-      packet.header.packetType = PKTMSG;
-      strcpy_s(packet.name, name);
-      strcpy_s(packet.message, msg);
-      int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
-      break;
-    }
+      case PKTMSG: {
+        PacketMessage packet;
+        packet.header.packetType = PKTMSG;
+        strcpy_s(packet.name, name);
+        strcpy_s(packet.message, msg);
+        int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
+        break;
+      }
 
-    default:
-      break;
+      default:
+        break;
+    }
   }
 }
 
 void ChessClient::sendMessage(PACKETTYPE type, float x, float y)
 {
-  switch (type) {
-    case PKTGAME_TEST: {
-      PacketGame_Test packet;
-      packet.header.packetType = PKTGAME_TEST;
-      strcpy_s(packet.name, name);
-      packet.pos.x = x;
-      packet.pos.y = y;
-      send(clientSock, (char*)&packet, sizeof(packet), 0);
-      break;
+  if (isConnected) {
+    switch (type) {
+      case PKTGAME_TEST: {
+        PacketGame_Test packet;
+        packet.header.packetType = PKTGAME_TEST;
+        strcpy_s(packet.name, name);
+        packet.pos.x = x;
+        packet.pos.y = y;
+        send(clientSock, (char*)&packet, sizeof(packet), 0);
+        break;
+      }
+      default:
+        break;
     }
-    default:
-      break;
   }
 }
 
@@ -103,12 +108,24 @@ void ChessClient::processPacket()
 
     case PKTMSG: {
       PacketMessage* packet = (PacketMessage*)recvBuff;
-      MessageBox(NULL, packet->message, "Message", MB_OK);
+      switch (packet->header.msgType) {
+        case MSGSTATE: {
+          this->gameState = packet->header.state;
+          //MessageBox(NULL, packet->message, "Message", MB_OK);
+          break;
+        }
+
+        case MSGLOGIN:
+        case MSGLOGOUT:
+        case MSGCHAT:
+          break;
+      }
       break;
     }
 
     case PKTGAME_TEST: {
       PacketGame_Test* packet = (PacketGame_Test*)recvBuff;
+      this->gameState = packet->header.state;
       this->testPos.x = packet->pos.x;
       this->testPos.y = packet->pos.y;
       break;

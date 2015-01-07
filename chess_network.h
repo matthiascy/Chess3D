@@ -8,8 +8,15 @@
 #define MAX_MSG_SIZE    512
 #define STR_LEN         32
 
+const char OPPSITE_STATE = 0x20;
+const char login[STR_LEN] = "login_successfully";
+
 enum PACKETTYPE {
   PKTMSG, PKTGAME, PKTGAME_TEST
+};
+
+enum MSGTYPE {
+  MSGLOGIN, MSGLOGOUT, MSGSTATE, MSGCHAT
 };
 
 typedef struct Postion {
@@ -25,6 +32,8 @@ typedef struct Position_Test {
 
 typedef struct PacketHeader {
   PACKETTYPE packetType;
+  MSGTYPE msgType;
+  char state;
 } PacketHeader;
 
 typedef struct PacketMessage {
