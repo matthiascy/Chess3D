@@ -25,12 +25,10 @@ bool fullscreen = false;
 int mouseX, mouseY;
 char name[STR_LEN];
 char password[STR_LEN];
-char kState;
-char recvColor;
 bool fixed = false;  // color fixed
 
 HDC hDC;
-HWND chessWnd;			   // window handle
+HWND chessWnd;      // window handle
 HMENU popupMenu;
 HINSTANCE globalInstance;
 
@@ -44,24 +42,24 @@ void setupPixelFormat(HDC hDC)
   int pixelFormat;
 
   PIXELFORMATDESCRIPTOR pfd = {
-    sizeof(PIXELFORMATDESCRIPTOR),	// size
-    1,							// version
-    PFD_SUPPORT_OPENGL |		// OpenGL window
-    PFD_DRAW_TO_WINDOW |		// render to window
-    PFD_DOUBLEBUFFER,			// support double-buffering
-    PFD_TYPE_RGBA,				// color type
-    32,							// preferred color depth
-    0, 0, 0, 0, 0, 0,			// color bits (ignored)
-    0,							// no alpha buffer
-    0,							// alpha bits (ignored)
-    0,							// no accumulation buffer
-    0, 0, 0, 0,					// accum bits (ignored)
-    16,							// depth buffer
-    0,							// no stencil buffer
-    0,							// no auxiliary buffers
-    PFD_MAIN_PLANE,				// main layer
-    0,							// reserved
-    0, 0, 0,					// no layer, visible, damage masks
+    sizeof(PIXELFORMATDESCRIPTOR), // size
+    1,							   // version
+    PFD_SUPPORT_OPENGL |		   // OpenGL window
+    PFD_DRAW_TO_WINDOW |		   // render to window
+    PFD_DOUBLEBUFFER,			   // support double-buffering
+    PFD_TYPE_RGBA,				   // color type
+    32,							   // preferred color depth
+    0, 0, 0, 0, 0, 0,			   // color bits (ignored)
+    0,							   // no alpha buffer
+    0,							   // alpha bits (ignored)
+    0,							   // no accumulation buffer
+    0, 0, 0, 0,					   // accum bits (ignored)
+    16,							   // depth buffer
+    0,							   // no stencil buffer
+    0,							   // no auxiliary buffers
+    PFD_MAIN_PLANE,				   // main layer
+    0,							   // reserved
+    0, 0, 0,					   // no layer, visible, damage masks
   };
 
   pixelFormat = ChoosePixelFormat(hDC, &pfd);
@@ -169,8 +167,8 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case WM_KEYDOWN: {
       int fwKeys;
       LPARAM keyData;
-      fwKeys = (int)wParam;    // virtual-key code 
-      keyData = lParam;        // key data 
+      fwKeys = (int)wParam;    // virtual-key code
+      keyData = lParam;        // key data
 
       switch (fwKeys) {
         case VK_ESCAPE:
@@ -384,10 +382,9 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           GetDlgItemText(hWnd, IDC_PWD, password, STR_LEN);
           kClient->setName(name);
           kClient->setPwd(password);
-          //kClient->connectToServer("127.0.0.1", 1200);
-          if (kClient->connectToServer("127.0.0.1", 1200))
+          if (kClient->connectToServer("127.0.0.1", SERVER_PORT))
+            kClient->sendMessage(PKTMSG, MSGLOGIN, NO_COLOR, password);
             EndDialog(hWnd, wParam);
-
           break;
         }
         case IDC_BUTTON_CANCEL: {

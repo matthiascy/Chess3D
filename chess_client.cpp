@@ -35,7 +35,7 @@ bool ChessClient::connectToServer(const char* ip, short int port)
   serverAddr.sin_addr.S_un.S_addr = inet_addr(ip);
   serverAddr.sin_port = htons(port);
   if (connect(clientSock, (sockaddr*)&serverAddr,
-    sizeof(serverAddr)) != 0) {
+    sizeof(serverAddr)) == 0) {
     closesocket(clientSock);
     return false;
   }

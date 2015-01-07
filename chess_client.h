@@ -50,6 +50,10 @@ public:
     return color;
   };
 
+  char* getPassword() {
+    return pwd;
+  };
+
   void initialize();
   bool connectToServer(const char* ip, short int port);
   // color used as color&NT_TYPE

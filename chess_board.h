@@ -3,15 +3,15 @@
 
 const unsigned char PIECE_NONE   = 0x00;
 const unsigned char PIECE_PAWN   = 0x01;
-const unsigned char PIECE_ROOK	 = 0x02;
+const unsigned char PIECE_ROOK   = 0x02;
 const unsigned char PIECE_KNIGHT = 0x04;
 const unsigned char PIECE_BISHOP = 0x08;
-const unsigned char PIECE_QUEEN	 = 0x10;
-const unsigned char PIECE_KING	 = 0x20;
+const unsigned char PIECE_QUEEN  = 0x10;
+const unsigned char PIECE_KING   = 0x20;
 
-const char NO_COLOR	= 0x00;
-const char WHITE	= 0x01;
-const char BLACK	= 0xFE;
+const char NO_COLOR = 0x00;
+const char WHITE    = 0x01;
+const char BLACK    = 0xFE;
 
 class ChessBoard {
 private:
