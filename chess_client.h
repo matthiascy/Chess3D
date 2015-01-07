@@ -3,6 +3,7 @@
 
 #include <WinSock2.h>
 #include "chess_network.h"
+#include "chess_board.h"
 
 class ChessClient {
 public:
@@ -26,21 +27,34 @@ public:
   };
 
   Position getPosition() {
-    return testPos;
+    return chessPos;
   };
 
-  void setState(const char state) {
-    gameState = state;
+  bool getConnection() {
+    return this->isConnected;
   };
 
-  char getState() {
-    return gameState;
+  void setConnection(bool state) {
+    this->isConnected = state;
+  };
+
+  bool getIsGame() {
+    return isGame;
+  };
+
+  char getClientColor() {
+    return clientColor;
+  }
+
+  char getColor() {
+    return color;
   };
 
   void initialize();
   bool connectToServer(const char* ip, short int port);
+  // color used as color&NT_TYPE
   void sendMessage(PACKETTYPE type, MSGTYPE msgType,
-                   char state, char* msg,
+                   char color, char* msg,
                    float x = 0.0f, float y = 0.0f);
   void recvMessage();
   void processPacket();
@@ -53,9 +67,10 @@ private:
   char name[STR_LEN];
   char pwd[STR_LEN];
   Position chessPos;
-  Position testPos;
   bool isConnected;
-  char gameState;
+  char clientColor;
+  char color;
+  bool isGame;
 };
 
 #endif // __CHESS_CLIENT_H__

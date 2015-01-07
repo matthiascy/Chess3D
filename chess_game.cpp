@@ -172,7 +172,8 @@ void ChessGame::initialize()
   currentMoveColor = WHITE;
   checkColor = NO_COLOR;
   gameState	= WAIT_STATE;
-  oppsiteState = NT_MOVING;
+  isTurn = false;
+  //oppsiteState = NT_MOVING;
 }
 
 void ChessGame::update(float dt)
@@ -800,6 +801,7 @@ bool ChessGame::isValidMove(int pieceIdx, int newRow, int newCol)
 
 void ChessGame::onSelection(float col, float row)
 {
+  isTurn = false;
   for (int x = 0; x < 8; x++)
     for (int y = 0; y < 8; y++)
       chessBoard->disableHighlight(x, y);
@@ -825,11 +827,15 @@ void ChessGame::onSelection(float col, float row)
                   capturePiece(idx, (int)row, (int)col);
                   pieceCapture = true;
 
+                  /*
                   // we've moved, so now it's the other color's turn to move
+                  
                   if (currentMoveColor == WHITE)
                     currentMoveColor = BLACK;
                   else if (currentMoveColor == BLACK)
                     currentMoveColor = WHITE;
+                  */
+                  isTurn = true;
 
                   break;
               }
@@ -855,11 +861,111 @@ void ChessGame::onSelection(float col, float row)
 
           movePiece(selectedPieceIdx, (int)row, (int)col);
 
+          /*
           // we've moved, so now it's the other color's turn to move
           if (currentMoveColor == WHITE)
             currentMoveColor = BLACK;
           else if (currentMoveColor == BLACK)
             currentMoveColor = WHITE;
+          */
+
+        }
+
+        selectedPieceIdx = -1;
+        currentRow = -1;
+        currentCol = -1;
+      } else {
+        // no pieces currently selected, so we select a square
+        chessBoard->enableHighlight((int)row, (int)col);
+
+        // check through pieces for this location, if a piece is there, select the piece
+        for (int idx = 0; idx < 32; idx++) {
+          if ((pieces[idx].pieceRow == (int)row) && (pieces[idx].pieceCol == (int)col) && (pieces[idx].pieceInPlay)) {
+            selectedPieceIdx = idx;
+            break;
+          }
+        }
+
+        currentRow = (int)row;
+        currentCol = (int)col;
+      }
+    } else {
+      selectedPieceIdx = -1;
+      currentRow = -1;
+      currentCol = -1;
+    }
+  }
+}
+
+void ChessGame::onSelection(float col, float row, bool flag)
+{
+  for (int x = 0; x < 8; x++)
+    for (int y = 0; y < 8; y++)
+      chessBoard->disableHighlight(x, y);
+
+  if (gameState == WAIT_STATE) {
+    if (((col <= 8.0) && (col >= 0.0)) && ((row >= 0.0) && (row <= 8.0))) {
+      if (selectedPieceIdx != -1) {
+        bool pieceCapture = false;
+
+        // see if a piece of the opposite color is at the new position. if so, then capture
+        for (int idx = 0; idx < 32; idx++) {
+          if ((pieces[idx].pieceRow == (int)row) &&
+              (pieces[idx].pieceCol == (int)col) &&
+              pieces[idx].pieceInPlay &&
+              (pieces[selectedPieceIdx].pieceColor != pieces[idx].pieceColor)) {
+            // do we have a capture?
+            if ((isPieceCaptured(currentMoveColor, (int)row, (int)col)) &&
+                (isValidMove(selectedPieceIdx, (int)row, (int)col))) {
+
+              gameState = CAPTURE_STATE;
+
+              movePiece(selectedPieceIdx, (int)row, (int)col, true);
+              capturePiece(idx, (int)row, (int)col);
+              pieceCapture = true;
+
+              /*
+              // we've moved, so now it's the other color's turn to move
+
+              if (currentMoveColor == WHITE)
+              currentMoveColor = BLACK;
+              else if (currentMoveColor == BLACK)
+              currentMoveColor = WHITE;
+              */
+              //isTurn = true;
+
+              break;
+            }
+          }
+        }
+
+        // we already have a piece selected, so move it if possible
+        if (!pieceCapture && isValidMove(selectedPieceIdx, (int)row, (int)col)) {
+          gameState = MOVING_STATE;
+
+          // check if castling
+          if (isCastlingMove(selectedPieceIdx, (int)row, (int)col)) {
+            // move rooks
+            if (((int)row == 0) && ((int)col == 6))
+              movePieceImmediate(9, 0, 5);
+            else if (((int)row == 0) && ((int)col == 2))
+              movePieceImmediate(8, 0, 3);
+            else if (((int)row == 7) && ((int)col == 6))
+              movePieceImmediate(25, 7, 5);
+            else if (((int)row == 7) && ((int)col == 2))
+              movePieceImmediate(24, 7, 3);
+          }
+
+          movePiece(selectedPieceIdx, (int)row, (int)col);
+
+          /*
+          // we've moved, so now it's the other color's turn to move
+          if (currentMoveColor == WHITE)
+            currentMoveColor = BLACK;
+          else if (currentMoveColor == BLACK)
+            currentMoveColor = WHITE;
+          */
+
         }
 
         selectedPieceIdx = -1;

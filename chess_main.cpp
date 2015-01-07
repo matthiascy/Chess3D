@@ -26,6 +26,8 @@ int mouseX, mouseY;
 char name[STR_LEN];
 char password[STR_LEN];
 char kState;
+char recvColor;
+bool fixed = false;  // color fixed
 
 HDC hDC;
 HWND chessWnd;			   // window handle
@@ -134,9 +136,16 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case WM_LBUTTONDOWN: {
       xPos = LOWORD(lParam);
       yPos = HIWORD(lParam);
-      kRender->get3DIntersection(xPos, yPos, x, y, z);
-      kClient->sendMessage(PKTGAME, MSGNULL, NT_WAIT, NULL, z, x);
-      kGame->onSelection((float)z, (float)x);
+      if (kClient->getIsGame()) {
+        if (kGame->getCurrentMoveColor() == kGame->getGameColor()) {
+          kRender->get3DIntersection(xPos, yPos, x, y, z);
+          kClient->sendMessage(PKTGAME, MSGNULL, kGame->getGameColor(), NULL, z, x);
+          kGame->onSelection((float)z, (float)x);
+          if (kGame->getIsTure()) {
+            kClient->sendMessage(PKTGAME, MSGNULL, ~kGame->getGameColor(), NULL);
+          }
+        }
+      }
       break; 
     }
 
@@ -180,9 +189,14 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case FD_READ: {
           kClient->recvMessage();
           kClient->processPacket();
-          kGame->onSelection(-kClient->getPosition().x, kClient->getPosition().y);
-          //kState = kClient->getState();
-          kGame->setOppState(kClient->getState());
+          if (kClient->getIsGame()) {
+            if (!fixed) {
+              kGame->setGameColor(kClient->getClientColor());
+            } else {
+              kGame->setCurrentMoveColor(kClient->getColor());
+              kGame->onSelection(-kClient->getPosition().x, kClient->getPosition().y);
+            }
+          }
           break;
         }
 
@@ -271,8 +285,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   chessWnd = CreateWindowEx(NULL,			// extended style
                         "GLClass",							// class name
                         "Chess3D",                          // app name
-                        dwStyle | WS_CLIPCHILDREN |
-                        WS_CLIPSIBLINGS,
+                        dwStyle | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
                         0, 0,								// x,y coordinate
                         windowRect.right - windowRect.left,
                         windowRect.bottom - windowRect.top, // width, height
@@ -340,12 +353,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   if (wParam == ID_POPUP_LOGIN) {
-    DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
+    DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), hWnd, (DLGPROC)LogDlgProc);
     //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
   } else if (wParam == ID_POPUP_MATCH) {
     kClient->sendMessage(PKTMSG, MSGMATCH, NT_SEARCHGAME, NULL);
   } else if (wParam == ID_POPUP_LOGOUT) {
-
+    kClient->sendMessage(PKTMSG, MSGLOGOUT, NULL, NULL);
   } else {
     SendMessage(chessWnd, WM_DESTROY, wParam, lParam);
   }
@@ -371,11 +384,10 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           GetDlgItemText(hWnd, IDC_PWD, password, STR_LEN);
           kClient->setName(name);
           kClient->setPwd(password);
-          if (kClient->connectToServer("127.0.0.1", 1200)) {
-            MessageBox(NULL, " ", " ", MB_OK);
-          }
-          //kClient->sendMessage(PKTMSG, "HELLO");
-          //kClient->sendMessage(PKTMSG, "HELLO");
+          //kClient->connectToServer("127.0.0.1", 1200);
+          if (kClient->connectToServer("127.0.0.1", 1200))
+            EndDialog(hWnd, wParam);
+
           break;
         }
         case IDC_BUTTON_CANCEL: {

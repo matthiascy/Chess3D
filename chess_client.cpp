@@ -18,6 +18,8 @@ void ChessClient::initialize()
   memset(&recvBuff, 0, sizeof(recvBuff));
   memset(&sendBuff, 0, sizeof(sendBuff));
   isConnected = false;
+  isGame = false;
+  clientColor = NO_COLOR;
 }
 
 bool ChessClient::connectToServer(const char* ip, short int port)
@@ -41,7 +43,7 @@ bool ChessClient::connectToServer(const char* ip, short int port)
   return true;
 }
 
-void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
+void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char color,
                               char* msg, float x/* = 0.0f*/, float y/* = 0.0f*/)
 {
   if (isConnected) {
@@ -51,7 +53,7 @@ void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
         memset(&packet, 0, sizeof(packet));
         packet.header.packetType = PKTMSG;
         packet.header.msgType = msgType;
-        packet.header.state = state;
+        packet.state = color;
         strcpy_s(packet.name, this->name);
 
         send(this->clientSock, (char*)&packet, sizeof(packet), 0);
@@ -63,7 +65,7 @@ void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
         memset(&packet, 0, sizeof(packet));
         packet.header.packetType = PKTGAME;
         packet.header.msgType = msgType;
-        packet.header.state = state;
+        packet.color = color;
         strcpy_s(packet.name, this->name);
         packet.pos.x = x;
         packet.pos.y = y;
@@ -88,19 +90,44 @@ void ChessClient::processPacket()
       PacketGame* packet = (PacketGame*)recvBuff;
       this->chessPos.x = packet->pos.x;
       this->chessPos.y = packet->pos.y;
+      this->color = packet->color;
       break;
     }
 
     case PKTMSG: {
       PacketMessage* packet = (PacketMessage*)recvBuff;
       switch (packet->header.msgType) {
-        case MSGSTATE: {
-          this->gameState = packet->header.state;
+        case MSGMATCH: {
+          switch (packet->state) {
+            case NT_CONFIREMATCH: {
+              if (MessageBox(NULL, "Game found, enter?", "Confirm", MB_YESNO) == IDOK) {
+                sendMessage(PKTMSG, MSGMATCH, NT_CONFIREMATCH, NULL);
+              }
+              break;
+            }
+
+            default:
+              break;
+          }
+          break;
+        }
+
+        case MSGCOLOR: {
+          clientColor = packet->state;
+          isGame = true;
           break;
         }
 
         case MSGLOGIN:
-        case MSGLOGOUT:
+        case MSGLOGOUT: {
+          if (packet->state = NT_LOGIN) {
+            isConnected = true;
+          } else {
+            MessageBox(NULL, "Connection failed!", "Info", MB_OK);
+          }
+          break;
+        }
+
         case MSGCHAT: {
           MessageBox(NULL, packet->message, "Info", MB_OK);
           break;

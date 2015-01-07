@@ -42,6 +42,8 @@ private:
 
   char	currentMoveColor;	// color with the current move
   char	checkColor;		    // color of king in check, if any (NO_COLOR is possible)
+  char  gameColor;
+  bool  isTurn;
 
   char	gameState;
   char  oppsiteState;
@@ -102,6 +104,7 @@ public:
   }
 
   void onSelection(float row, float col);
+  void onSelection(float row, float col, bool flag);
 
   bool getBoardHighlight(int row, int col) {
     return chessBoard->getHighlight(row, col); 
@@ -125,7 +128,23 @@ public:
     oppsiteState = state;
   };
 
-  char getCurrentMoveColor() { return currentMoveColor; }
+  char getCurrentMoveColor() { return currentMoveColor; };
+
+  void setCurrentMoveColor(char color) {
+    currentMoveColor = color;
+  };
+
+  void setGameColor(char color) {
+    gameColor = color;
+  };
+
+  char getGameColor() {
+    return gameColor;
+  }
+
+  bool getIsTure() {
+    return isTurn;
+  };
 };
 
 #endif // __CHESS_GAME_H__

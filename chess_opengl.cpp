@@ -114,12 +114,15 @@ void ChessOGL::render()
               0.0, 1.0, 0.0);
     //renderMenu();
   } else {
-    if (currentView == WHITE)
+    if (/*currentView*/chessGame->getGameColor() == WHITE)
       gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
                 0.0, 1.0, 0.0);
-    else
+    else if (chessGame->getGameColor() == BLACK)
       gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
-                0.0, 1.0, 0.0);
+      0.0, 1.0, 0.0);
+    else
+      gluLookAt((whiteViewPos.x + blackViewPos.x) / 2, blackViewPos.y, (whiteViewPos.z + blackViewPos.z) / 2,
+      4.0, 0.0, 4.0, 0.0, 1.0, 0.0);
   }
 
   // render the wood table
