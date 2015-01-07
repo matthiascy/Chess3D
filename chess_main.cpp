@@ -340,7 +340,13 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
     //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
   } else if (wParam == ID_POPUP_MATCH) {
-    
+    PacketMessage packet;
+    memset(&packet, 0, sizeof(packet));
+
+    packet.header.packetType = PKTMSG;
+    packet.header.msgType = MSGMATCH;
+    packet.header.state = NT_SEARCHGAME;
+
   } else if (wParam == ID_POPUP_LOGOUT) {
 
   } else {
@@ -351,9 +357,7 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 void displayPopupMenu(long x, long y)
 {
   HMENU temp = GetSubMenu(popupMenu, 0);
-  TrackPopupMenu(temp,
-                 TPM_LEFTALIGN | TPM_LEFTBUTTON
-                 , x, y, 0, chessWnd, NULL);
+  TrackPopupMenu(temp, TPM_LEFTALIGN | TPM_LEFTBUTTON, x, y, 0, chessWnd, NULL);
 }
 
 LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -370,7 +374,9 @@ LRESULT CALLBACK LogDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           GetDlgItemText(hWnd, IDC_PWD, password, STR_LEN);
           kClient->setName(name);
           kClient->setPwd(password);
-          kClient->connectToServer("127.0.0.1", 1200);
+          if (kClient->connectToServer("127.0.0.1", 1200)) {
+            MessageBox(NULL, " ", " ", MB_OK);
+          }
           //kClient->sendMessage(PKTMSG, "HELLO");
           //kClient->sendMessage(PKTMSG, "HELLO");
           break;

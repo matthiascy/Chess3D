@@ -25,7 +25,7 @@ public:
     strcpy_s(this->pwd, pwd);
   };
 
-  Position_Test getPosition() {
+  Position getPosition() {
     return testPos;
   };
 
@@ -52,7 +52,7 @@ private:
   char name[STR_LEN];
   char pwd[STR_LEN];
   Position chessPos;
-  Position_Test testPos;
+  Position testPos;
   bool isConnected;
   char gameState;
 };

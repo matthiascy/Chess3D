@@ -74,7 +74,7 @@ void ChessClient::sendMessage(PACKETTYPE type, float x, float y)
   if (isConnected) {
     switch (type) {
       case PKTGAME_TEST: {
-        PacketGame_Test packet;
+        PacketGame packet;
         packet.header.packetType = PKTGAME_TEST;
         strcpy_s(packet.name, name);
         packet.pos.x = x;
@@ -99,10 +99,14 @@ void ChessClient::processPacket()
   switch (header->packetType) {
     case PKTGAME: {
       PacketGame* packet = (PacketGame*)recvBuff;
+      /*
       this->chessPos.oriCol = packet->pos.oriCol;
       this->chessPos.oriRow = packet->pos.oriRow;
       this->chessPos.desCol = packet->pos.desCol;
       this->chessPos.desRow = packet->pos.desRow;
+      */
+      this->chessPos.x = packet->pos.x;
+      this->chessPos.y = packet->pos.y;
       break;
     }
 
@@ -124,7 +128,7 @@ void ChessClient::processPacket()
     }
 
     case PKTGAME_TEST: {
-      PacketGame_Test* packet = (PacketGame_Test*)recvBuff;
+      PacketGame* packet = (PacketGame*)recvBuff;
       this->gameState = packet->header.state;
       this->testPos.x = packet->pos.x;
       this->testPos.y = packet->pos.y;

@@ -14,6 +14,8 @@ const char NT_MOVING = 0x12;
 const char NT_CAPTURE = 0x14;
 const char NT_KILL = 0x18;
 const char NT_MASK = 0x0F;
+const char NT_SEARCHGAME = 0x20;
+const char NT_INGAME = 0x21;
 
 const char login[STR_LEN] = "login_successfully";
 
@@ -22,19 +24,12 @@ enum PACKETTYPE {
 };
 
 enum MSGTYPE {
-  MSGLOGIN, MSGLOGOUT, MSGSTATE, MSGCHAT
+  MSGLOGIN, MSGLOGOUT, MSGSTATE, MSGCHAT, MSGMATCH
 };
 
-typedef struct Postion {
-  float oriCol;
-  float oriRow;
-  float desCol;
-  float desRow;
-} Position;
-
-typedef struct Position_Test {
+typedef struct Position {
   float x, y;
-} Position_Test;
+} Position;
 
 typedef struct PacketHeader {
   PACKETTYPE packetType;
@@ -51,13 +46,22 @@ typedef struct PacketMessage {
 typedef struct PacketGame {
   PacketHeader header;
   char name[STR_LEN];
-  Postion pos;
+  Position pos;
 } PacketGame;
 
-typedef struct PacketGame_Test {
-  PacketHeader header;
-  char name[STR_LEN];
-  Position_Test pos;
-};
+typedef struct UserInfo {
+  char userName[STR_LEN];
+  char userPwd[STR_LEN];
+} UserInfo;
+
+typedef struct ClientInfo {
+  UserInfo client;
+  SOCKET clientSock;
+  char clientState;
+} ClientInfo;
+
+typedef struct MatchedUser{
+  ClientInfo connectedUser[2];
+} MatchedUser;
 
 #endif // __CHESS_NETWORK_H__
