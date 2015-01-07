@@ -24,11 +24,14 @@ private:
   Vector blackViewPos;
   char   currentView;
 
+  bool isMenu;
+
   void generateChessBoardDL();
   void renderChessBoard();
   void renderSelections();
   void renderPieces();
   void renderTable();
+  void renderMenu();
   void drawSelectionBox(float x, float y, float z);
 
 public:

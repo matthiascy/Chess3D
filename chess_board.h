@@ -11,7 +11,7 @@ const unsigned char PIECE_KING	 = 0x20;
 
 const char NO_COLOR	= 0x00;
 const char WHITE	= 0x01;
-const char BLACK	= 0x02;
+const char BLACK	= 0xFE;
 
 class ChessBoard {
 private:

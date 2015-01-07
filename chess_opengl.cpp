@@ -4,7 +4,6 @@
 
 #include <gl/gl.h>
 #include <gl/glu.h>
-#include <math.h>
 #include <cmath>
 #include <cstdio>
 
@@ -17,6 +16,7 @@
 #include "chess_texture_manage.h"
 #include "chess_opengl.h"
 #include "chess_game.h"
+#include "chess_network.h"
 
 #pragma warning(disable:4244)
 #pragma warning(disable:4305)
@@ -27,13 +27,12 @@
 // public
 ChessOGL::ChessOGL()
 {
-
 }
 
 ChessOGL::~ChessOGL()
 {
-
 }
+
 bool ChessOGL::initialize()
 {	
   if (!texMgr.loadTextures("Textures.dat"))
@@ -50,6 +49,8 @@ bool ChessOGL::initialize()
   whiteViewPos = Vector(-1.0, 8.0, 4.0);
   blackViewPos = Vector(9.0, 8.0, 4.0);
   currentView = WHITE;
+
+  isMenu = true;
 
   return true;
 }
@@ -77,11 +78,16 @@ void ChessOGL::setupProjection(int width, int height)
   glMatrixMode(GL_PROJECTION);			// set projection matrix current matrix
   glLoadIdentity();						// reset projection matrix
 
-  // calculate perspective
-  gluPerspective(54.0f,(GLfloat)width/(GLfloat)height,1.0f,1000.0f);
+  if (!isMenu) {
+    glOrtho(-20.0, 20.0, 0.0, 10.0, 1.0, 1000.0);
+    //glFrustum(-10.0, 20.0, 0.0, 10.0, 1.0, 1000.0);
+  } else {
+    // calculate perspective
+    gluPerspective(54.0f, (GLfloat)width / (GLfloat)height, 1.0f, 1000.0f);
 
-  glMatrixMode(GL_MODELVIEW);				// set modelview matrix
-  glLoadIdentity();						// reset modelview matrix
+    glMatrixMode(GL_MODELVIEW);				// set modelview matrix
+    glLoadIdentity();						// reset modelview matrix
+  }
 
   windowWidth = width;
   windowHeight = height;
@@ -102,12 +108,22 @@ void ChessOGL::render()
 
   glLoadIdentity();
 
-  if (currentView == WHITE)
-    gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
+  if (isMenu) {
+    gluLookAt(-1.0, 8.0, 4.0,
+              4.0, 0.0, 4.0,
+              0.0, 1.0, 0.0);
+    //renderMenu();
+  } else {
+    if (/*currentView*/chessGame->getGameColor() == WHITE)
+      gluLookAt(whiteViewPos.x, whiteViewPos.y, whiteViewPos.z, 4.0, 0.0, 4.0,
+                0.0, 1.0, 0.0);
+    else if (chessGame->getGameColor() == BLACK)
+      gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
       0.0, 1.0, 0.0);
-  else
-    gluLookAt(blackViewPos.x, blackViewPos.y, blackViewPos.z, 4.0, 0.0, 4.0,
-      0.0, 1.0, 0.0);
+    else
+      gluLookAt((whiteViewPos.x + blackViewPos.x) / 2, blackViewPos.y, (whiteViewPos.z + blackViewPos.z) / 2,
+      4.0, 0.0, 4.0, 0.0, 1.0, 0.0);
+  }
 
   // render the wood table
   glDisable(GL_DEPTH_TEST);
@@ -139,11 +155,13 @@ void ChessOGL::render()
   // don't modify the contents of the stencil buffer
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-  // draw reflected chess pieces first
-  glPushMatrix();
-  glScalef(1.0, -1.0, 1.0);
-  renderPieces();
-  glPopMatrix();
+  //if (chessGame->getOppState() == NT_WAIT) {
+    // draw reflected chess pieces first
+    glPushMatrix();
+    glScalef(1.0, -1.0, 1.0);
+    renderPieces();
+    glPopMatrix();
+  //}
 
   // draw chessboard and selection square with blending
   glEnable(GL_BLEND);
@@ -156,11 +174,13 @@ void ChessOGL::render()
   // turn off stencil testing
   glDisable(GL_STENCIL_TEST);
 
-  // draw pieces normally
-  glPushMatrix();
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  renderPieces();
-  glPopMatrix();
+  //if (chessGame->getOppState() == NT_WAIT) {
+    // draw pieces normally
+    glPushMatrix();
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    renderPieces();
+    glPopMatrix();
+  //}
 }
 
 void ChessOGL::renderSelections()
@@ -281,5 +301,15 @@ void ChessOGL::get3DIntersection(int winx, int winy, double &x, double &y, doubl
   // get (x, y, z) intersection on (x, z) plane
   x =  nx + (point * dir[0]);
   y =  ny + (point * dir[1]);
-  z =  nz + (point * dir[2]);
+  z =  nz + (point * dir[2]); 
+}
+
+void ChessOGL::renderMenu()
+{
+  glBegin(GL_QUADS);
+  glVertex3f(1.0f, 0.0f, -20.0f);
+  glVertex3f(1.0f, 0.0f, 20.0f);
+  glVertex3f(1.0f, 20.0f, 20.0f);
+  glVertex3f(1.0f, 20.0f, -20.0f);
+  glEnd();
 }
