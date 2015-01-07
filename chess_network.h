@@ -9,6 +9,12 @@
 #define STR_LEN         32
 
 const char OPPSITE_STATE = 0x20;
+const char NT_WAIT = 0x11;
+const char NT_MOVING = 0x12;
+const char NT_CAPTURE = 0x14;
+const char NT_KILL = 0x18;
+const char NT_MASK = 0x0F;
+
 const char login[STR_LEN] = "login_successfully";
 
 enum PACKETTYPE {
