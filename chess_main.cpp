@@ -134,7 +134,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
       xPos = LOWORD(lParam);
       yPos = HIWORD(lParam);
       kRender->get3DIntersection(xPos, yPos, x, y, z);
-      //kClient->sendMessage(PKTGAME_TEST, z, x);
+      //kClient->sendMessage(PKTGAME, z, x);
       kGame->onSelection((float)z, (float)x);
       break; 
     }
@@ -340,12 +340,8 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     DialogBox(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), NULL, (DLGPROC)LogDlgProc);
     //CreateDialog(globalInstance, MAKEINTRESOURCE(IDD_LOG_DIALOG), chessWnd, (DLGPROC)LogDlgProc);
   } else if (wParam == ID_POPUP_MATCH) {
-    PacketMessage packet;
-    memset(&packet, 0, sizeof(packet));
-
-    packet.header.packetType = PKTMSG;
-    packet.header.msgType = MSGMATCH;
-    packet.header.state = NT_SEARCHGAME;
+    kClient->sendMessage(PKTMSG, MSGMATCH, NT_SEARCHGAME, NULL);
+    //packet.name = kClient
 
   } else if (wParam == ID_POPUP_LOGOUT) {
 

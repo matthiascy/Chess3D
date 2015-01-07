@@ -39,8 +39,7 @@ public:
 
   void initialize();
   bool connectToServer(const char* ip, short int port);
-  void sendMessage(PACKETTYPE type, char* msg);
-  void sendMessage(PACKETTYPE type, float x, float y);
+  void sendMessage(PACKETTYPE type, MSGTYPE msgType, char state, char* msg, float x = 0, float y = 0);
   void recvMessage();
   void processPacket();
 

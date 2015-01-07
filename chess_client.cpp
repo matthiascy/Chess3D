@@ -41,49 +41,35 @@ bool ChessClient::connectToServer(const char* ip, short int port)
   return true;
 }
 
-void ChessClient::sendMessage(PACKETTYPE type, char* msg)
+void ChessClient::sendMessage(PACKETTYPE type, MSGTYPE msgType, char state,
+                              char* msg, float x/* = 0*/, float y/* = 0*/)
 {
   if (isConnected) {
     switch (type) {
-      case PKTGAME: {
-        PacketGame packet;
-        packet.header.packetType = PKTGAME;
-        strcpy_s(packet.name, name);
-        packet.pos = chessPos;
-        int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
-        break;
-      }
-
       case PKTMSG: {
         PacketMessage packet;
+        memset(&packet, 0, sizeof(packet));
         packet.header.packetType = PKTMSG;
-        strcpy_s(packet.name, name);
-        strcpy_s(packet.message, msg);
-        int ret = send(clientSock, (char*)&packet, sizeof(packet), 0);
+        packet.header.msgType = msgType;
+        packet.header.state = state;
+        strcpy_s(packet.name, this->name);
+
+        send(this->clientSock, (char*)&packet, sizeof(packet), 0);
         break;
       }
 
-      default:
-        break;
-    }
-  }
-}
-
-void ChessClient::sendMessage(PACKETTYPE type, float x, float y)
-{
-  if (isConnected) {
-    switch (type) {
-      case PKTGAME_TEST: {
+      case PKTGAME: {
         PacketGame packet;
-        packet.header.packetType = PKTGAME_TEST;
-        strcpy_s(packet.name, name);
+        memset(&packet, 0, sizeof(packet));
+        packet.header.packetType = PKTGAME;
+        packet.header.state = state;
+        strcpy_s(packet.name, this->name);
         packet.pos.x = x;
         packet.pos.y = y;
-        send(clientSock, (char*)&packet, sizeof(packet), 0);
+
+        send(this->clientSock, (char*)&packet, sizeof(packet), 0);
         break;
       }
-      default:
-        break;
     }
   }
 }
@@ -124,14 +110,6 @@ void ChessClient::processPacket()
         case MSGCHAT:
           break;
       }
-      break;
-    }
-
-    case PKTGAME_TEST: {
-      PacketGame* packet = (PacketGame*)recvBuff;
-      this->gameState = packet->header.state;
-      this->testPos.x = packet->pos.x;
-      this->testPos.y = packet->pos.y;
       break;
     }
   }

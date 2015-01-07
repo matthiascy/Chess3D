@@ -20,7 +20,7 @@ const char NT_INGAME = 0x21;
 const char login[STR_LEN] = "login_successfully";
 
 enum PACKETTYPE {
-  PKTMSG, PKTGAME, PKTGAME_TEST
+  PKTMSG, PKTGAME
 };
 
 enum MSGTYPE {
