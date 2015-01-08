@@ -25,6 +25,7 @@ void ChessClient::initialize()
 bool ChessClient::connectToServer(const char* ip, short int port)
 {
   SOCKET clientSock = socket(AF_INET, SOCK_STREAM, 0);
+  this->clientSock = clientSock;
   if (clientSock == INVALID_SOCKET) {
     return false;
   }
@@ -39,7 +40,6 @@ bool ChessClient::connectToServer(const char* ip, short int port)
     closesocket(clientSock);
     return false;
   }
-
   return true;
 }
 

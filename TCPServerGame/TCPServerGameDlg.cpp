@@ -351,6 +351,7 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
           addUser(packet->name, packet->message);
           addClient(packet->name, s);
           //send
+          sendPacket(packet->name, MSGLOGIN, NULL, NT_NULL);
 
 
           cnnNum = cnnNum + 1;
@@ -437,10 +438,12 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
         for (int i = 0; i < MAX_LISTEN / 2; i++) {
           if (strcmp(MatchList[i].connectedUser[0].client.userName, packet->name) == 0 ||
               strcmp(MatchList[i].connectedUser[1].client.userName, packet->name) == 0) {
-            if (MatchList[i].connectedUser[0].clientState == NT_CONFIREMATCH ||
+            if (MatchList[i].connectedUser[0].clientState == NT_CONFIREMATCH &&
                 MatchList[i].connectedUser[1].clientState == NT_CONFIREMATCH) {
               MatchList[i].flag = true;
               // send
+              sendPacket(MatchList[i].connectedUser[0].client.userName, MSGMATCH, NULL, NT_CONFIREMATCH);
+              sendPacket(MatchList[i].connectedUser[1].client.userName, MSGMATCH, NULL, NT_CONFIREMATCH);
             }
           }
         }
@@ -551,10 +554,20 @@ void CTCPServerGameDlg::messageProcessing(const char* recvBuff, SOCKET s)
   }
 }
 
-void CTCPServerGameDlg::sendPacket(const char* name, PACKETTYPE type, MSGTYPE msgType)
+void CTCPServerGameDlg::sendPacket(const char* name, MSGTYPE msgType,
+                                   char* msg, char state)
 {
-  switch (type) {
-
+  PacketMessage packet;
+  memset(&packet, 0, sizeof(packet));
+  packet.header.packetType = PKTMSG;
+  packet.header.msgType = msgType;
+  strcpy_s(packet.name, name);
+  strcpy_s(packet.message, msg);
+  packet.state = state;
+  for (int i = 0; i < OnClientNum; i++) {
+    if (strcmp(OnClientList[i].client.userName, name) == 0) {
+      ::send(OnClientList[i].clientSock, (char*)&packet, sizeof(packet), 0);
+    }
   }
 }
 
@@ -568,8 +581,10 @@ LRESULT CTCPServerGameDlg::OnSocket(WPARAM wParam, LPARAM lParam)//消息处理函数
       for (int i = 0; i < MAX_LISTEN; i++) {
         if (conSock[i] == INVALID_SOCKET) {
           conSock[i] = ::accept(sockSvr, (sockaddr *)&fromAddr, &fromLen);
-          WSAAsyncSelect(conSock[i], this->m_hWnd, WM_SOCKET, FD_READ);
+          WSAAsyncSelect(conSock[i], this->m_hWnd, WM_SOCKET,
+                         FD_WRITE | FD_CLOSE);
         }
+        break;
       }
       //sockCnnn = ::accept(sockSvr, (sockaddr *)&fromAddr, &fromLen);
       //WSAAsyncSelect(sockCnnn, m_hWnd, WM_SOCKET, FD_READ);

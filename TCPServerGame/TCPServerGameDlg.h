@@ -53,7 +53,8 @@ public:
 	//消息处理
 	void messageProcessing(const char* recvBuff,SOCKET s);
     void addClient(const char* name, SOCKET S);
-    void sendPacket(const char* name, PACKETTYPE type, MSGTYPE msgType);
+    void sendPacket(const char* name, MSGTYPE msgType,
+                    char* msg, char state);
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 };
